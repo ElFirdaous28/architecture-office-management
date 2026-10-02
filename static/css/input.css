@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@source "../../accounts/templates";
+@source "../../clients/templates";
+@source "../../projects/templates";
+@source "../../tasks/templates";
