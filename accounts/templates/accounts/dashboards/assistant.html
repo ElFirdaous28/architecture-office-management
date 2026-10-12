@@ -1,0 +1,23 @@
+{% extends 'accounts/base_dashboard.html' %}
+
+{% block title %}Assistant Dashboard{% endblock %}
+
+{% block welcome_message %}
+    Here's an overview of the office's projects and tasks.
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+    <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <p class="text-sm text-gray-500">Total Projects</p>
+        <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_projects }}</p>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <p class="text-sm text-gray-500">Total Tasks</p>
+        <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_tasks }}</p>
+    </div>
+
+</div>
+{% endblock %}
