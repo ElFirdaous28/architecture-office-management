@@ -68,6 +68,8 @@ class User(AbstractUser):
         default=Role.ASSISTANT
     )
 
+    must_change_password = models.BooleanField(default=False)
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
