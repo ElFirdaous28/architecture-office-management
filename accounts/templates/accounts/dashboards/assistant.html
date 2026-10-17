@@ -1,23 +1,20 @@
-{% extends 'accounts/base_dashboard.html' %}
+
+{% extends "accounts/base_dashboard.html" %}
 
 {% block title %}Assistant Dashboard{% endblock %}
+
+{% block dashboard_title %}Office Overview{% endblock %}
 
 {% block welcome_message %}
     Here's an overview of the office's projects and tasks.
 {% endblock %}
 
 {% block dashboard_content %}
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
-        <p class="text-sm text-gray-500">Total Projects</p>
-        <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_projects }}</p>
-    </div>
+    {% include "accounts/partials/_stat_card.html" with label="Total Projects" value=total_projects icon="building-2" %}
 
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
-        <p class="text-sm text-gray-500">Total Tasks</p>
-        <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_tasks }}</p>
-    </div>
+    {% include "accounts/partials/_stat_card.html" with label="Total Tasks" value=total_tasks icon="clipboard-list" %}
 
 </div>
 {% endblock %}

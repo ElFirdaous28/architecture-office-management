@@ -1,43 +1,26 @@
-{% extends 'accounts/base_dashboard.html' %}
+
+{% extends "accounts/base_dashboard.html" %}
 
 {% block title %}Administrator Dashboard{% endblock %}
+
+{% block dashboard_title %}Administrator Dashboard{% endblock %}
 
 {% block welcome_message %}
     Here's an overview of your architecture office.
 {% endblock %}
 
 {% block dashboard_content %}
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
-        <p class="text-sm text-gray-500">Total Clients</p>
-        <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_clients }}</p>
-    </div>
+    {% include "accounts/partials/_stat_card.html" with label="Total Clients" value=total_clients icon="users" %}
 
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
-        <p class="text-sm text-gray-500">Total Projects</p>
-        <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_projects }}</p>
-    </div>
+    {% include "accounts/partials/_stat_card.html" with label="Total Projects" value=total_projects icon="building-2" %}
 
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
-        <p class="text-sm text-gray-500">Total Tasks</p>
-        <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_tasks }}</p>
-    </div>
+    {% include "accounts/partials/_stat_card.html" with label="Total Tasks" value=total_tasks icon="clipboard-list" %}
 
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
-        <p class="text-sm text-gray-500">Completed Projects</p>
-        <p class="mt-2 text-3xl font-bold text-green-600">{{ completed_projects }}</p>
-    </div>
+    {% include "accounts/partials/_stat_card.html" with label="Completed Projects" value=completed_projects icon="circle-check" %}
 
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
-        <p class="text-sm text-gray-500">Completed Tasks</p>
-        <p class="mt-2 text-3xl font-bold text-green-600">{{ completed_tasks }}</p>
-    </div>
+    {% include "accounts/partials/_stat_card.html" with label="Completed Tasks" value=completed_tasks icon="check-check" %}
 
 </div>
-
-    <a href="{% url 'user_list' %}"
-       class="text-sm font-medium text-gray-700 hover:text-gray-900">
-        Manage Users
-    </a>
 {% endblock %}
