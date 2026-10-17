@@ -1,6 +1,44 @@
+
 @import "tailwindcss";
 
+/* Django template locations */
 @source "../../accounts/templates";
 @source "../../clients/templates";
 @source "../../projects/templates";
 @source "../../tasks/templates";
+
+/* Brand colors */
+:root {
+    --brand-primary: #1E3A5F;
+    --brand-secondary: #C86446;
+    --brand-tertiary: #2B4C7E;
+    --brand-neutral: #2C343F;
+
+    --brand-background: #F5F7FA;
+    --brand-surface: #FFFFFF;
+    --brand-text-main: #2C343F;
+    --brand-text-muted: #64748B;
+    --brand-border: #E2E8F0;
+}
+
+/* Tailwind color utilities */
+@theme inline {
+    --color-primary: var(--brand-primary);
+    --color-secondary: var(--brand-secondary);
+    --color-tertiary: var(--brand-tertiary);
+    --color-neutral: var(--brand-neutral);
+
+    --color-background: var(--brand-background);
+    --color-surface: var(--brand-surface);
+    --color-text-main: var(--brand-text-main);
+    --color-text-muted: var(--brand-text-muted);
+    --color-border: var(--brand-border);
+}
+
+/* Base styles */
+@layer base {
+    body {
+        background-color: var(--brand-background);
+        color: var(--brand-text-main);
+    }
+}
