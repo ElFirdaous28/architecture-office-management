@@ -11,10 +11,10 @@
 
 <body class="min-h-screen bg-background text-text-main antialiased">
 
-    <div class="flex min-h-screen">
-
-        {% include "accounts/partials/_sidebar.html" %}
-
+    <div class="flex min-h-screen flex-col md:flex-row">
+        <div class="md:sticky md:top-0 md:h-screen">
+            {% include "accounts/partials/_sidebar.html" %}
+        </div>
         <div class="flex min-w-0 flex-1 flex-col">
 
             {% include "accounts/partials/_header.html" %}
