@@ -97,7 +97,7 @@ def dashboard_view(request):
 
     if 'Architect' in groups:
         context['my_projects'] = Project.objects.filter(
-            architect=user
+            architects=user
         )
         context['my_tasks'] = Task.objects.filter(
             architect=user

@@ -1,0 +1,143 @@
+{% extends "accounts/base_dashboard.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block dashboard_title %}{{ page_title }}{% endblock %}
+{% block welcome_message %}Enter the project details and assign its architects.{% endblock %}
+
+{% block dashboard_content %}
+<div class="mx-auto max-w-4xl">
+    <a href="{% url 'project_list' %}"
+       class="mb-5 inline-flex items-center gap-2 text-sm font-medium text-text-muted transition-colors hover:text-primary">
+        <i data-lucide="arrow-left" class="h-4 w-4" aria-hidden="true"></i>
+        Back
+    </a>
+
+    <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
+        <form method="post" class="space-y-6 p-6 sm:p-8">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div role="alert" class="rounded-lg bg-red-50 p-4 text-sm text-red-700 border border-red-200">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="grid gap-5 sm:grid-cols-2">
+                {% for field in form %}
+                    {% if field.name != "architects" and field.name != "client" %}
+                        <div class="{% if field.name == 'description' %}sm:col-span-2{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="mb-2 block text-sm font-medium text-neutral">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="text-secondary">*</span>{% endif %}
+                            </label>
+                            {{ field }}
+                            {% for error in field.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Perfectly Aligned Client Search Dropdown -->
+                <div class="relative">
+                    <label for="clientSearch" class="mb-2 block text-sm font-medium text-neutral">
+                        {{ form.client.label }}
+                        <span class="text-secondary">*</span>
+                    </label>
+                    <div class="hidden">{{ form.client }}</div>
+                    
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-text-muted">
+                            <i data-lucide="user" class="h-4 w-4"></i>
+                        </span>
+                        <input id="clientSearch" type="search" autocomplete="off"
+                               placeholder="Search and select a client..."
+                               class="w-full rounded-lg border border-border bg-surface pl-9 pr-10 py-2.5 text-sm text-neutral outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-text-muted">
+                            <i data-lucide="chevron-down" class="h-4 w-4 transition-transform duration-200" id="clientChevron"></i>
+                        </span>
+                    </div>
+
+                    <!-- Fixed absolute width matching parent container -->
+                    <div id="clientOptions"
+                         class="absolute left-0 right-0 top-full z-30 mt-1 hidden max-h-56 overflow-y-auto rounded-lg border border-border bg-surface p-1 shadow-xl">
+                        {% for option in form.client %}
+                            {% if option.data.value %}
+                                <button type="button" data-client-option
+                                        data-value="{{ option.data.value }}"
+                                        class="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm text-neutral transition-colors hover:bg-background hover:text-primary">
+                                    <span>{{ option.choice_label }}</span>
+                                    <i data-lucide="check" class="h-4 w-4 opacity-0 text-primary check-icon"></i>
+                                </button>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% for error in form.client.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Perfectly Aligned Multi-Select Architects Dropdown -->
+            <section class="border-t border-border pt-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-base font-semibold text-primary">{{ form.architects.label }}</h2>
+                        <p class="mt-1 text-sm text-text-muted">Select one or more architects for this project.</p>
+                    </div>
+                    <span id="architectBadge" class="hidden items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                        0 selected
+                    </span>
+                </div>
+
+                <div class="relative mt-4">
+                    <button type="button" id="architectSelectButton"
+                            class="flex w-full items-center justify-between rounded-lg border border-border bg-surface px-3 py-2.5 text-left text-sm text-text-muted outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10">
+                        <span id="architectSelection" class="truncate">Search and select architects</span>
+                        <i data-lucide="chevron-down" class="h-4 w-4 shrink-0 transition-transform duration-200" id="architectChevron"></i>
+                    </button>
+                    
+                    <!-- Fixed absolute width matching parent container -->
+                    <div id="architectOptions"
+                         class="absolute left-0 right-0 top-full z-30 mt-1 hidden rounded-lg border border-border bg-surface p-3 shadow-xl">
+                        <div class="relative mb-2">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-text-muted">
+                                <i data-lucide="search" class="h-4 w-4"></i>
+                            </span>
+                            <input id="architectSearch" type="search" autocomplete="off"
+                                   placeholder="Filter architects by name..."
+                                   class="w-full rounded-lg border border-border bg-surface pl-9 pr-3 py-2 text-sm text-neutral outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10">
+                        </div>
+                        <div class="max-h-56 space-y-0.5 overflow-y-auto pr-1">
+                            {% for checkbox in form.architects %}
+                                <label data-architect-option
+                                       class="flex cursor-pointer items-center gap-3 rounded-md px-2.5 py-2 text-sm text-neutral transition-colors hover:bg-background">
+                                    {{ checkbox.tag }}
+                                    <span class="select-none">{{ checkbox.choice_label }}</span>
+                                </label>
+                            {% empty %}
+                                <p class="px-2 py-3 text-sm text-text-muted text-center">No active architects available.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% for error in form.architects.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            </section>
+
+            <div class="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
+                <a href="{% url 'project_list' %}" class="inline-flex justify-center rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-background">Cancel</a>
+                <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-tertiary shadow-sm">
+                    <i data-lucide="save" class="h-4 w-4" aria-hidden="true"></i>
+                    Save Project
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script src="{% static 'js/project-form.js' %}"></script>
+{% endblock %}

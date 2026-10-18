@@ -46,6 +46,18 @@
                 <span>Clients</span>
             </a>
 
+            <a href="{% url 'project_list' %}"
+               {% if current_nav == "project_list" or current_nav == "project_create" or current_nav == "project_update" or current_nav == "project_delete" %}aria-current="page"{% endif %}
+               class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition
+               {% if current_nav == 'project_list' or current_nav == 'project_create' or current_nav == 'project_update' or current_nav == 'project_delete' %}
+                   bg-white/15 text-white
+               {% else %}
+                   text-white/75 hover:bg-white/10 hover:text-white
+               {% endif %}">
+                <i data-lucide="building-2" class="h-5 w-5 shrink-0" aria-hidden="true"></i>
+                <span>Projects</span>
+            </a>
+
             {% if request.user.role == "ADMIN" %}
                 <a href="{% url 'user_list' %}"
                    {% if current_nav == "user_list" or current_nav == "user_create" %}aria-current="page"{% endif %}
