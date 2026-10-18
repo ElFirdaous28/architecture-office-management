@@ -47,11 +47,13 @@
             </p>
         </div>
 
-        <a href="{% url 'user_create' %}"
-           class="inline-flex items-center justify-center gap-2 self-start rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-tertiary sm:self-auto">
-            <i data-lucide="user-plus" class="h-4 w-4" aria-hidden="true"></i>
-            Create account
-        </a>
+        {% if request.user.role == "ADMIN" %}
+            <a href="{% url 'user_create' %}"
+               class="inline-flex items-center justify-center gap-2 self-start rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-tertiary sm:self-auto">
+                <i data-lucide="user-plus" class="h-4 w-4" aria-hidden="true"></i>
+                Create account
+            </a>
+        {% endif %}
     </div>
 
     <!-- Users table -->
