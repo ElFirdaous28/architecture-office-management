@@ -12,31 +12,7 @@
 {% block dashboard_content %}
 <div class="space-y-6">
 
-    <!-- Feedback messages -->
-    {% if messages %}
-        <div class="space-y-3">
-            {% for message in messages %}
-                <div role="status"
-                     class="flex items-start gap-3 rounded-lg border p-4 text-sm
-                     {% if 'error' in message.tags %}
-                         border-red-200 bg-red-50 text-red-700
-                     {% elif 'success' in message.tags %}
-                         border-green-200 bg-green-50 text-green-800
-                     {% else %}
-                         border-border bg-surface text-neutral
-                     {% endif %}">
-                    {% if 'error' in message.tags %}
-                        <i data-lucide="circle-alert" class="h-5 w-5 shrink-0" aria-hidden="true"></i>
-                    {% elif 'success' in message.tags %}
-                        <i data-lucide="circle-check" class="h-5 w-5 shrink-0" aria-hidden="true"></i>
-                    {% else %}
-                        <i data-lucide="info" class="h-5 w-5 shrink-0" aria-hidden="true"></i>
-                    {% endif %}
-                    <span>{{ message }}</span>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    {% include "components/_messages.html" %}
 
     <!-- Page actions -->
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -55,6 +31,28 @@
             </a>
         {% endif %}
     </div>
+
+    <form method="get" class="flex flex-col gap-3 sm:flex-row">
+        <label class="relative flex-1">
+            <span class="sr-only">Search users</span>
+            <input type="search" name="q" value="{{ search }}" placeholder="Search users..."
+                   class="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
+        </label>
+        <select name="role" class="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
+            <option value="">All roles</option>
+            {% for value, label in role_choices %}
+                <option value="{{ value }}" {% if role == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">
+            Filter
+        </button>
+        {% if search or role %}
+            <a href="{% url 'user_list' %}" class="rounded-lg border border-border px-4 py-2.5 text-center text-sm hover:bg-background">
+                Clear
+            </a>
+        {% endif %}
+    </form>
 
     <!-- Users table -->
     <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
@@ -137,5 +135,11 @@
         </div>
     </div>
 
+    {% include "components/_pagination.html" %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script src="{% static 'js/toast.js' %}"></script>
 {% endblock %}

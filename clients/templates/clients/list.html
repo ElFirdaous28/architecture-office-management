@@ -14,7 +14,7 @@
         <div>
             <h2 class="text-lg font-semibold text-primary">All Clients</h2>
             <p class="mt-1 text-sm text-text-muted">
-                {{ clients|length }} client{{ clients|length|pluralize }}
+                {{ page_obj.paginator.count }} client{{ page_obj.paginator.count|pluralize }}
             </p>
         </div>
 
@@ -27,14 +27,19 @@
         {% endif %}
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div role="status"
-                 class="rounded-lg border border-border bg-surface px-4 py-3 text-sm">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+    {% include "components/_messages.html" %}
+
+    <form method="get" class="flex flex-col gap-3 sm:flex-row">
+        <label class="relative flex-1">
+            <span class="sr-only">Search clients</span>
+            <input type="search" name="q" value="{{ search }}" placeholder="Search clients..."
+                   class="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
+        </label>
+        <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">Search</button>
+        {% if search %}
+            <a href="{% url 'client_list' %}" class="rounded-lg border border-border px-4 py-2.5 text-center text-sm hover:bg-background">Clear</a>
+        {% endif %}
+    </form>
 
     <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
         {% if clients %}
@@ -111,6 +116,7 @@
         {% endif %}
     </div>
 
+    {% include "components/_pagination.html" %}
     {% include "components/_delete_modal.html" %}
 </div>
 {% endblock %}
@@ -118,4 +124,5 @@
 {% block extra_js %}
 {% load static %}
 <script src="{% static 'js/modal.js' %}"></script>
+<script src="{% static 'js/toast.js' %}"></script>
 {% endblock %}

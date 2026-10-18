@@ -18,6 +18,8 @@ from .forms import RequiredPasswordChangeForm, UserCreateForm
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db import transaction
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 class RequiredPasswordChangeView(LoginRequiredMixin, FormView):
@@ -117,14 +119,34 @@ def dashboard_view(request):
 
 @role_required("Administrator")
 def user_list_view(request):
+    search = request.GET.get("q", "").strip()
+    role = request.GET.get("role", "").strip()
     users = User.objects.prefetch_related("groups").order_by(
         "last_name", "first_name"
     )
+    if search:
+        users = users.filter(
+            Q(first_name__icontains=search)
+            | Q(last_name__icontains=search)
+            | Q(email__icontains=search)
+        )
+    if role in dict(User.Role.choices):
+        users = users.filter(role=role)
 
+    page_obj = Paginator(users, 10).get_page(request.GET.get("page"))
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
     return render(
         request,
         "accounts/users/list.html",
-        {"users": users},
+        {
+            "users": page_obj,
+            "page_obj": page_obj,
+            "query_params": query_params.urlencode(),
+            "search": search,
+            "role": role,
+            "role_choices": User.Role.choices,
+        },
     )
 
 

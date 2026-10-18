@@ -1,0 +1,22 @@
+{% if page_obj.has_other_pages %}
+    <nav class="flex items-center justify-between border-t border-border px-6 py-4"
+         aria-label="Pagination">
+        <p class="text-sm text-text-muted">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </p>
+        <div class="flex items-center gap-2">
+            {% if page_obj.has_previous %}
+                <a href="?{{ query_params }}{% if query_params %}&{% endif %}page={{ page_obj.previous_page_number }}"
+                   class="rounded-lg border border-border px-3 py-2 text-sm hover:bg-background">
+                    Previous
+                </a>
+            {% endif %}
+            {% if page_obj.has_next %}
+                <a href="?{{ query_params }}{% if query_params %}&{% endif %}page={{ page_obj.next_page_number }}"
+                   class="rounded-lg border border-border px-3 py-2 text-sm hover:bg-background">
+                    Next
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+{% endif %}

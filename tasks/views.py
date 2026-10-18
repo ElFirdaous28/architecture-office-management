@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
+from django.db import models
 from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.decorators import role_required
@@ -20,10 +22,29 @@ def _project_with_tasks(project_pk):
 @role_required("Administrator", "Architect", "Assistant")
 def task_list(request, project_pk):
     project = _project_with_tasks(project_pk)
+    search = request.GET.get("q", "").strip()
+    status = request.GET.get("status", "").strip()
     tasks = project.tasks.select_related("architect").order_by("due_date", "title")
+    if search:
+        tasks = tasks.filter(
+            models.Q(title__icontains=search)
+            | models.Q(description__icontains=search)
+            | models.Q(architect__first_name__icontains=search)
+            | models.Q(architect__last_name__icontains=search)
+        )
+    if status in dict(Task.Status.choices):
+        tasks = tasks.filter(status=status)
+
+    page_obj = Paginator(tasks, 10).get_page(request.GET.get("page"))
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
     return render(request, "tasks/list.html", {
         "project": project,
-        "tasks": tasks,
+        "tasks": page_obj,
+        "page_obj": page_obj,
+        "query_params": query_params.urlencode(),
+        "search": search,
+        "status": status,
         "status_choices": Task.Status.choices,
     })
 

@@ -6,6 +6,7 @@
 @source "../../clients/templates";
 @source "../../projects/templates";
 @source "../../tasks/templates";
+@source "../../templates";
 
 /* Brand colors */
 :root {

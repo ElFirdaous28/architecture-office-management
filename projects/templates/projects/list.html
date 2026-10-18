@@ -10,7 +10,7 @@
         <div>
             <h2 class="text-lg font-semibold text-primary">All Projects</h2>
             <p class="mt-1 text-sm text-text-muted">
-                {{ projects|length }} project{{ projects|length|pluralize }}
+                {{ page_obj.paginator.count }} project{{ page_obj.paginator.count|pluralize }}
             </p>
         </div>
 
@@ -23,13 +23,23 @@
         {% endif %}
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div role="status" class="rounded-lg border border-border bg-surface px-4 py-3 text-sm">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+    {% include "components/_messages.html" %}
+
+    <form method="get" class="flex flex-col gap-3 sm:flex-row">
+        <label class="relative flex-1">
+            <span class="sr-only">Search projects</span>
+            <input type="search" name="q" value="{{ search }}" placeholder="Search projects..."
+                   class="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
+        </label>
+        <select name="status" class="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
+            <option value="">All statuses</option>
+            {% for value, label in project_status_choices %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+        <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">Filter</button>
+        {% if search or status %}
+            <a href="{% url 'project_list' %}" class="rounded-lg border border-border px-4 py-2.5 text-center text-sm hover:bg-background">Clear</a>
+        {% endif %}
+    </form>
 
     <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
         {% if projects %}
@@ -121,6 +131,7 @@
         {% endif %}
     </div>
 
+    {% include "components/_pagination.html" %}
     {% include "components/_delete_modal.html" %}
 </div>
 {% endblock %}
@@ -128,5 +139,6 @@
 {% block extra_js %}
 {% load static %}
 <script src="{% static 'js/modal.js' %}"></script>
+<script src="{% static 'js/toast.js' %}"></script>
 <script src="{% static 'js/task-status.js' %}"></script>
 {% endblock %}
