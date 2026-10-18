@@ -63,7 +63,14 @@
                                         Unassigned
                                     {% endfor %}
                                 </td>
-                                <td class="px-6 py-4 text-text-muted">{{ project.get_status_display }}</td>
+                                <td class="px-6 py-4">
+                                    {% if request.user.role == "ADMIN" %}
+                                        {% url 'project_status_update' project.pk as project_status_url %}
+                                        {% include "components/_status_select.html" with form_action=project_status_url status=project.status choices=project_status_choices %}
+                                    {% else %}
+                                        {% include "components/_status_badge.html" with status=project.status label=project.get_status_display %}
+                                    {% endif %}
+                                </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center justify-end gap-3">
                                         {% if request.user.role == "ADMIN" %}
@@ -121,4 +128,5 @@
 {% block extra_js %}
 {% load static %}
 <script src="{% static 'js/modal.js' %}"></script>
+<script src="{% static 'js/task-status.js' %}"></script>
 {% endblock %}

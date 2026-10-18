@@ -1,0 +1,17 @@
+<form method="post" action="{{ form_action }}">
+    {% csrf_token %}
+    <select name="status"
+            data-status-select
+            onchange="this.form.submit()"
+            class="rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/10
+            {% if status == 'TODO' or status == 'PLANNED' %}border-amber-200 bg-amber-50 text-amber-700 focus:border-amber-500
+            {% elif status == 'IN_PROGRESS' %}border-blue-200 bg-blue-50 text-blue-700 focus:border-blue-500
+            {% elif status == 'COMPLETED' %}border-emerald-200 bg-emerald-50 text-emerald-700 focus:border-emerald-500
+            {% else %}border-border bg-surface text-neutral focus:border-primary{% endif %}">
+        {% for value, choice_label in choices %}
+            <option value="{{ value }}" {% if status == value %}selected{% endif %}>
+                {{ choice_label }}
+            </option>
+        {% endfor %}
+    </select>
+</form>

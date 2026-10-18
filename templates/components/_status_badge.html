@@ -1,0 +1,7 @@
+<span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium
+    {% if status == 'TODO' or status == 'PLANNED' %}bg-amber-50 text-amber-700
+    {% elif status == 'IN_PROGRESS' %}bg-blue-50 text-blue-700
+    {% elif status == 'COMPLETED' %}bg-emerald-50 text-emerald-700
+    {% else %}bg-background text-text-muted{% endif %}">
+    {{ label }}
+</span>

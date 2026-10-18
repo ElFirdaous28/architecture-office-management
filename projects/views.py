@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.decorators import role_required
 
-from .forms import ProjectForm
+from .forms import ProjectForm, ProjectStatusForm
 from .models import Project
 
 
@@ -12,7 +12,10 @@ def project_list(request):
     projects = Project.objects.select_related("client").prefetch_related(
         "architects"
     ).order_by("-created_at")
-    return render(request, "projects/list.html", {"projects": projects})
+    return render(request, "projects/list.html", {
+        "projects": projects,
+        "project_status_choices": Project.Status.choices,
+    })
 
 
 @role_required("Administrator")
@@ -55,5 +58,22 @@ def project_delete(request, pk):
         project.delete()
         messages.success(request, "Project deleted successfully.")
         return redirect("project_list")
+
+    return redirect("project_list")
+
+
+@role_required("Administrator")
+def project_status_update(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+
+    if request.method != "POST":
+        return redirect("project_list")
+
+    form = ProjectStatusForm(request.POST, instance=project)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Project status updated successfully.")
+    else:
+        messages.error(request, "The project status could not be updated.")
 
     return redirect("project_list")

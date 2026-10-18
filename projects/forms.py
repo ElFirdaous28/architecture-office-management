@@ -70,3 +70,9 @@ class ProjectForm(forms.ModelForm):
             self.add_error("end_date", "End date must be on or after the start date.")
 
         return cleaned_data
+
+
+class ProjectStatusForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ["status"]
