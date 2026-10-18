@@ -1,0 +1,193 @@
+{% extends "accounts/base_dashboard.html" %}
+
+{% block title %}{{ project.name }} Tasks{% endblock %}
+{% block dashboard_title %}{{ project.name }} Tasks{% endblock %}
+{% block welcome_message %}View and manage tasks for this project.{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <a href="{% url 'project_list' %}" class="mb-3 inline-flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary">
+                <i data-lucide="arrow-left" class="h-4 w-4" aria-hidden="true"></i>
+                Back to Projects
+            </a>
+            <h2 class="text-lg font-semibold text-primary">Tasks</h2>
+            <p class="mt-1 text-sm text-text-muted">
+                {{ tasks|length }} task{{ tasks|length|pluralize }}
+            </p>
+        </div>
+
+        {% if request.user.role == "ADMIN" %}
+            <a href="{% url 'task_create' project.pk %}"
+               class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-tertiary">
+                <i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i>
+                Add Task
+            </a>
+        {% endif %}
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div role="status" class="rounded-lg border border-border bg-surface px-4 py-3 text-sm">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
+        {% if tasks %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="border-b border-border bg-background text-xs uppercase tracking-wide text-text-muted">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">Task</th>
+                            <th class="px-6 py-4 font-semibold">Architect</th>
+                            <th class="px-6 py-4 font-semibold">Due date</th>
+                            <th class="px-6 py-4 font-semibold">Status</th>
+                            <th class="px-6 py-4 text-right font-semibold">View{% if request.user.role == "ADMIN" %} / Actions{% endif %}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border">
+                        {% for task in tasks %}
+                            <tr class="transition hover:bg-background/70">
+                                <td class="px-6 py-4">
+                                    <p class="font-medium text-neutral">{{ task.title }}</p>
+                                    <p class="mt-1 max-w-sm truncate text-xs text-text-muted">{{ task.description }}</p>
+                                </td>
+                                <td class="px-6 py-4 text-text-muted">{{ task.architect|default:"Unassigned" }}</td>
+                                <td class="px-6 py-4 text-text-muted">{{ task.due_date }}</td>
+                                <td class="px-6 py-4">
+                                    {% if request.user.role == "ADMIN" or request.user.role == "ARCHITECT" and request.user == task.architect %}
+                                        <form method="post" action="{% url 'task_status_update' project.pk task.pk %}">
+                                            {% csrf_token %}
+                                            <select name="status" data-status-select onchange="this.form.submit()"
+                                                    class="rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/10
+                                                    {% if task.status == 'TODO' %}border-amber-200 bg-amber-50 text-amber-700 focus:border-amber-500
+                                                    {% elif task.status == 'IN_PROGRESS' %}border-blue-200 bg-blue-50 text-blue-700 focus:border-blue-500
+                                                    {% elif task.status == 'COMPLETED' %}border-emerald-200 bg-emerald-50 text-emerald-700 focus:border-emerald-500
+                                                    {% else %}border-border bg-surface text-neutral focus:border-primary{% endif %}">
+                                                {% for value, label in status_choices %}
+                                                    <option value="{{ value }}" {% if task.status == value %}selected{% endif %}>{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </form>
+                                    {% else %}
+                                        <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium
+                                            {% if task.status == 'TODO' %}bg-amber-50 text-amber-700
+                                            {% elif task.status == 'IN_PROGRESS' %}bg-blue-50 text-blue-700
+                                            {% elif task.status == 'COMPLETED' %}bg-emerald-50 text-emerald-700
+                                            {% else %}bg-background text-text-muted{% endif %}">
+                                            {{ task.get_status_display }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-3">
+                                        <button type="button"
+                                                onclick="openModal('task-{{ task.pk }}')"
+                                                title="View task"
+                                                aria-label="View {{ task.title }}"
+                                                class="rounded-lg p-2 text-primary transition hover:bg-primary/10">
+                                            <i data-lucide="eye" class="h-4 w-4" aria-hidden="true"></i>
+                                        </button>
+
+                                        {% if request.user.role == "ADMIN" %}
+                                            <a href="{% url 'task_update' project.pk task.pk %}"
+                                               title="Edit task"
+                                               aria-label="Edit {{ task.title }}"
+                                               class="rounded-lg p-2 text-text-muted transition hover:bg-background hover:text-primary">
+                                                <i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i>
+                                            </a>
+                                            <button type="button"
+                                                    data-delete-url="{% url 'task_delete' project.pk task.pk %}"
+                                                    data-client-name="{{ task.title }}"
+                                                    onclick="openDeleteModal(this.dataset.deleteUrl, this.dataset.clientName)"
+                                                    title="Delete task"
+                                                    aria-label="Delete {{ task.title }}"
+                                                    class="rounded-lg p-2 text-red-600 transition hover:bg-red-50">
+                                                <i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="px-6 py-16 text-center">
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <i data-lucide="clipboard-list" class="h-7 w-7" aria-hidden="true"></i>
+                </div>
+                <h3 class="mt-4 text-base font-semibold text-neutral">No tasks yet</h3>
+                <p class="mt-2 text-sm text-text-muted">Tasks will appear here once they are added.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    {% for task in tasks %}
+        <div id="task-{{ task.pk }}"
+             class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="task-title-{{ task.pk }}"
+             onclick="closeModal(event, 'task-{{ task.pk }}')">
+            <div class="w-full max-w-lg overflow-hidden rounded-xl bg-surface shadow-xl"
+                 onclick="event.stopPropagation()">
+                <div class="flex items-start justify-between border-b border-border p-6">
+                    <div>
+                        <p class="text-sm font-medium text-text-muted">Task details</p>
+                        <h2 id="task-title-{{ task.pk }}" class="mt-1 text-xl font-bold text-primary">
+                            {{ task.title }}
+                        </h2>
+                    </div>
+                    <button type="button"
+                            onclick="closeModal(event, 'task-{{ task.pk }}')"
+                            title="Close"
+                            aria-label="Close task details"
+                            class="rounded-lg p-2 text-text-muted transition hover:bg-background hover:text-primary">
+                        <i data-lucide="x" class="h-5 w-5" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <dl class="divide-y divide-border">
+                    <div class="grid gap-2 px-6 py-4 sm:grid-cols-3">
+                        <dt class="text-sm font-medium text-text-muted">Description</dt>
+                        <dd class="whitespace-pre-line break-words text-sm text-neutral sm:col-span-2">{{ task.description }}</dd>
+                    </div>
+                    <div class="grid gap-2 px-6 py-4 sm:grid-cols-3">
+                        <dt class="text-sm font-medium text-text-muted">Architect</dt>
+                        <dd class="text-sm text-neutral sm:col-span-2">{{ task.architect|default:"Unassigned" }}</dd>
+                    </div>
+                    <div class="grid gap-2 px-6 py-4 sm:grid-cols-3">
+                        <dt class="text-sm font-medium text-text-muted">Due date</dt>
+                        <dd class="text-sm text-neutral sm:col-span-2">{{ task.due_date }}</dd>
+                    </div>
+                    <div class="grid gap-2 px-6 py-4 sm:grid-cols-3">
+                        <dt class="text-sm font-medium text-text-muted">Status</dt>
+                        <dd class="text-sm text-neutral sm:col-span-2">{{ task.get_status_display }}</dd>
+                    </div>
+                </dl>
+
+                <div class="flex justify-end gap-3 border-t border-border p-6">
+                    <button type="button"
+                            onclick="closeModal(event, 'task-{{ task.pk }}')"
+                            class="rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-neutral hover:bg-background">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% include "components/_delete_modal.html" %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script src="{% static 'js/modal.js' %}"></script>
+<script src="{% static 'js/task-status.js' %}"></script>
+{% endblock %}
