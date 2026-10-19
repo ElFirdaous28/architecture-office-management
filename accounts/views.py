@@ -1,11 +1,9 @@
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
-from django.urls import reverse_lazy
-from django.views.generic.edit import FormView
+from django.contrib.auth.forms import PasswordChangeForm
 
 from .models import User
 from clients.models import Client
@@ -13,7 +11,7 @@ from projects.models import Project
 from tasks.models import Task
 
 from .decorators import role_required
-from .forms import RequiredPasswordChangeForm, UserCreateForm
+from .forms import ProfileForm, RequiredPasswordChangeForm, UserCreateForm
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -21,24 +19,71 @@ from django.db import transaction
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.utils.translation import gettext as _
+from django.utils import timezone
 
 
-class RequiredPasswordChangeView(LoginRequiredMixin, FormView):
-    template_name = 'accounts/change_password.html'
-    form_class = RequiredPasswordChangeForm
-    success_url = reverse_lazy('dashboard')
+@login_required
+def profile_view(request):
+    profile_form = ProfileForm(instance=request.user)
+    password_form = PasswordChangeForm(user=request.user)
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "delete_account":
+            request.user.deleted_at = timezone.now()
+            request.user.is_active = False
+            request.user.save(update_fields=["deleted_at", "is_active"])
+            logout(request)
+            return redirect("login")
+        if action == "profile":
+            profile_form = ProfileForm(request.POST, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, _("Profile updated successfully."))
+                return redirect("profile")
+        elif action == "password":
+            password_form = PasswordChangeForm(
+                user=request.user,
+                data=request.POST,
+            )
+            if password_form.is_valid():
+                password_form.save()
+                update_session_auth_hash(request, request.user)
+                messages.success(request, _("Password updated successfully."))
+                return redirect("profile")
 
-    def form_valid(self, form):
-        user = form.save()
-        user.must_change_password = False
-        user.save(update_fields=['password', 'must_change_password'])
-        update_session_auth_hash(self.request, user)
-        return super().form_valid(form)
+    return render(
+        request,
+        "accounts/profile.html",
+        {
+            "profile_form": profile_form,
+            "password_form": password_form,
+        },
+    )
+
+
+@login_required
+def required_password_change_view(request):
+    password_form = RequiredPasswordChangeForm(user=request.user)
+
+    if request.method == "POST":
+        password_form = RequiredPasswordChangeForm(
+            user=request.user,
+            data=request.POST,
+        )
+        if password_form.is_valid():
+            password_form.save()
+            request.user.must_change_password = False
+            request.user.save(update_fields=["must_change_password"])
+            update_session_auth_hash(request, request.user)
+            messages.success(request, _("Password updated successfully."))
+            return redirect("dashboard")
+
+    return render(
+        request,
+        "accounts/change_password.html",
+        {"password_form": password_form},
+    )
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -122,7 +167,7 @@ def dashboard_view(request):
 def user_list_view(request):
     search = request.GET.get("q", "").strip()
     role = request.GET.get("role", "").strip()
-    users = User.objects.prefetch_related("groups").order_by(
+    users = User.objects.filter(deleted_at__isnull=True).prefetch_related("groups").order_by(
         "last_name", "first_name"
     )
     if search:
@@ -149,6 +194,23 @@ def user_list_view(request):
             "role_choices": User.Role.choices,
         },
     )
+
+
+@role_required("Administrator")
+def user_delete_view(request, pk):
+    if request.method != "POST":
+        raise PermissionDenied
+
+    user = get_object_or_404(User.objects.filter(deleted_at__isnull=True), pk=pk)
+    if user.pk == request.user.pk:
+        messages.error(request, _("You cannot delete your own account from the users table."))
+        return redirect("user_list")
+
+    user.deleted_at = timezone.now()
+    user.is_active = False
+    user.save(update_fields=["deleted_at", "is_active"])
+    messages.success(request, _("User scheduled for deletion in 30 days."))
+    return redirect("user_list")
 
 
 @role_required("Administrator")

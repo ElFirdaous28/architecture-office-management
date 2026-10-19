@@ -2,21 +2,40 @@
 {% load i18n %}
 <header class="flex min-h-20 items-center justify-end border-b border-border bg-surface px-6 lg:px-8">
     <div class="flex items-center gap-4">
-        <div class="text-right">
-            <p class="text-sm font-semibold text-neutral">
-                {{ request.user.first_name }} {{ request.user.last_name }}
-            </p>
-            <p class="text-xs text-text-muted">{{ user_role }}</p>
-        </div>
+        <details class="relative">
+            <summary class="flex cursor-pointer list-none items-center gap-3 rounded-lg px-2 py-1.5 transition hover:bg-background">
+                <span class="hidden text-right sm:block">
+                    <span class="block text-sm font-semibold text-neutral">
+                        {{ request.user.first_name }} {{ request.user.last_name }}
+                    </span>
+                    <span class="block text-xs text-text-muted">{{ request.user.get_role_display }}</span>
+                </span>
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                    {{ request.user.first_name|first|default:request.user.email|first|upper }}
+                </span>
+                <i data-lucide="chevron-down" class="h-4 w-4 text-text-muted" aria-hidden="true"></i>
+            </summary>
+            <div class="absolute right-0 top-full z-40 mt-2 w-56 rounded-xl border border-border bg-surface p-2 shadow-xl">
+                <div class="border-b border-border px-3 py-2 sm:hidden">
+                    <p class="text-sm font-semibold text-neutral">{{ request.user.first_name }} {{ request.user.last_name }}</p>
+                    <p class="text-xs text-text-muted">{{ request.user.get_role_display }}</p>
+                </div>
+                <a href="{% url 'profile' %}" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-neutral hover:bg-background">
+                    <i data-lucide="user-round" class="h-4 w-4 text-text-muted" aria-hidden="true"></i>
+                    {% translate "Profile" %}
+                </a>
+
+                <form method="post" action="{% url 'logout' %}" class="border-t border-border pt-2">
+                    {% csrf_token %}
+                    <button type="submit" class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-red-600 hover:bg-red-50">
+                        <i data-lucide="log-out" class="h-4 w-4" aria-hidden="true"></i>
+                        {% translate "Logout" %}
+                    </button>
+                </form>
+            </div>
+        </details>
 
         {% include "components/_language_switcher.html" %}
 
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit"
-                class="rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-white transition hover:opacity-90">
-                {% translate "Logout" %}
-            </button>
-        </form>
     </div>
 </header>

@@ -40,19 +40,13 @@ class UserCreateForm(forms.ModelForm):
             user.groups.set([Group.objects.get(name=role_group)])
 
         return user
-    
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "email")
+
 class RequiredPasswordChangeForm(PasswordChangeForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        for field in self.fields.values():
-            field.widget.attrs.update({
-                "class": (
-                    "w-full rounded-lg border border-gray-300 px-3 py-2 "
-                    "text-sm focus:border-gray-500 focus:outline-none"
-                )
-            })
-
     def clean_new_password1(self):
         new_password = self.cleaned_data.get("new_password1")
 

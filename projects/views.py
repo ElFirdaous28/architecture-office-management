@@ -17,6 +17,8 @@ def project_list(request):
     projects = Project.objects.select_related("client").prefetch_related(
         "architects"
     ).order_by("-created_at")
+    if request.user.role == "ARCHITECT":
+        projects = projects.filter(architects=request.user)
     if search:
         projects = projects.filter(
             models.Q(name__icontains=search)

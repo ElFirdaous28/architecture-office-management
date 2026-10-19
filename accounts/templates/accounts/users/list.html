@@ -73,6 +73,9 @@
                         <th scope="col" class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-text-muted">
                             {% translate "Status" %}
                         </th>
+                        <th scope="col" class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-text-muted">
+                            {% translate "Actions" %}
+                        </th>
                     </tr>
                 </thead>
 
@@ -117,10 +120,23 @@
                                     </span>
                                 {% endif %}
                             </td>
+                            <td class="px-6 py-4 text-right">
+                                {% if user.pk != request.user.pk %}
+                                    <button type="button"
+                                            data-delete-url="{% url 'user_delete' user.pk %}"
+                                            data-user-name="{{ user.get_full_name }}"
+                                            onclick="openDeleteModal(this.dataset.deleteUrl, this.dataset.userName)"
+                                            class="rounded-lg p-2 text-red-600 transition hover:bg-red-50"
+                                            title="{% translate 'Delete user' %}"
+                                            aria-label="{% blocktranslate with name=user.get_full_name %}Delete {{ name }}{% endblocktranslate %}">
+                                        <i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i>
+                                    </button>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="4" class="px-6 py-16 text-center">
+                            <td colspan="5" class="px-6 py-16 text-center">
                                 <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-background text-text-muted">
                                     <i data-lucide="users" class="h-6 w-6" aria-hidden="true"></i>
                                 </div>
@@ -137,10 +153,12 @@
     </div>
 
     {% include "components/_pagination.html" %}
+    {% include "components/_delete_modal.html" %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
 {% load static %}
 <script src="{% static 'js/toast.js' %}"></script>
+<script src="{% static 'js/modal.js' %}"></script>
 {% endblock %}

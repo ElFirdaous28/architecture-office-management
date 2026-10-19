@@ -10,6 +10,15 @@ class ForcePasswordChangeMiddleware:
     def __call__(self, request):
         if (
             request.user.is_authenticated
+            and getattr(request.user, "deleted_at", None) is not None
+        ):
+            from django.contrib.auth import logout
+
+            logout(request)
+            return redirect("login")
+
+        if (
+            request.user.is_authenticated
             and getattr(request.user, "must_change_password", False)
         ):
             allowed_urls = {"login", "logout", "password_change"}

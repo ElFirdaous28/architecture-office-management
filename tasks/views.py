@@ -22,7 +22,10 @@ def _project_with_tasks(project_pk):
 
 @role_required("Administrator", "Architect", "Assistant")
 def task_list(request, project_pk):
-    project = _project_with_tasks(project_pk)
+    project_queryset = Project.objects.prefetch_related("architects")
+    if request.user.role == "ARCHITECT":
+        project_queryset = project_queryset.filter(architects=request.user)
+    project = get_object_or_404(project_queryset, pk=project_pk)
     search = request.GET.get("q", "").strip()
     status = request.GET.get("status", "").strip()
     tasks = project.tasks.select_related("architect").order_by("due_date", "title")

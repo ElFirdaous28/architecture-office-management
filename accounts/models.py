@@ -70,6 +70,7 @@ class User(AbstractUser):
     )
 
     must_change_password = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']

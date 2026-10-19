@@ -24,6 +24,7 @@
 
         <form id="deleteForm" method="post">
             {% csrf_token %}
+            <input type="hidden" name="action" value="delete_account">
 
             <div class="flex justify-end gap-3">
                 <button

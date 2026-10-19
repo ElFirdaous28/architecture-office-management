@@ -1,12 +1,14 @@
 
-{% load i18n %}
+{% load static i18n %}
 <aside class="flex w-full shrink-0 flex-col bg-primary text-white md:sticky md:top-0 md:h-screen md:w-64">
 
     <!-- Brand -->
     <div class="border-b border-white/10 px-5 py-5 md:px-6 md:py-6">
         <a href="{% url 'dashboard' %}" class="flex items-center gap-3">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
-                <i data-lucide="building-2" class="h-6 w-6" aria-hidden="true"></i>
+                <img src="{% static 'images/logo_dark.png' %}"
+                     alt="{% translate 'Architecture Office logo' %}"
+                     class="h-8 w-8 object-contain">
             </div>
             <div>
                 <p class="text-sm font-bold tracking-wide">{% translate "Architecture" %}</p>
