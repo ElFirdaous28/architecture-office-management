@@ -1,14 +1,15 @@
 {% extends "accounts/base_dashboard.html" %}
+{% load i18n %}
 
 {% block title %}{{ page_title }}{% endblock %}
 {% block dashboard_title %}{{ page_title }}{% endblock %}
-{% block welcome_message %}Create a task for {{ project.name }}.{% endblock %}
+{% block welcome_message %}{% blocktranslate with name=project.name %}Create a task for {{ name }}.{% endblocktranslate %}{% endblock %}
 
 {% block dashboard_content %}
 <div class="mx-auto max-w-3xl">
     <a href="{% url 'project_task_list' project.pk %}" class="mb-5 inline-flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary">
         <i data-lucide="arrow-left" class="h-4 w-4" aria-hidden="true"></i>
-        Back to Tasks
+        {% translate "Back to Tasks" %}
     </a>
 
     <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
@@ -35,7 +36,7 @@
                     {{ form.architect.label }}<span class="text-secondary"> *</span>
                 </label>
                 {{ form.architect }}
-                <input id="architectSearch" type="search" autocomplete="off" placeholder="Search and select an architect"
+                <input id="architectSearch" type="search" autocomplete="off" placeholder="{% translate 'Search and select an architect' %}"
                        class="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-neutral outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
                 <div id="architectOptions" class="absolute inset-x-0 top-full z-10 mt-1 hidden max-h-56 overflow-y-auto rounded-lg border border-border bg-surface p-1 shadow-lg">
                     {% for option in form.architect %}
@@ -51,10 +52,10 @@
             </div>
 
             <div class="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
-                <a href="{% url 'project_task_list' project.pk %}" class="inline-flex justify-center rounded-lg border border-border px-5 py-2.5 text-sm font-medium hover:bg-background">Cancel</a>
+                <a href="{% url 'project_task_list' project.pk %}" class="inline-flex justify-center rounded-lg border border-border px-5 py-2.5 text-sm font-medium hover:bg-background">{% translate "Cancel" %}</a>
                 <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-tertiary">
                     <i data-lucide="save" class="h-4 w-4" aria-hidden="true"></i>
-                    Save Task
+                    {% translate "Save Task" %}
                 </button>
             </div>
         </form>

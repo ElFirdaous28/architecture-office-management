@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from accounts.models import User
 
@@ -12,12 +13,12 @@ class TaskForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(attrs={
                 "class": "w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-neutral outline-none focus:border-primary focus:ring-2 focus:ring-primary/10",
-                "placeholder": "Enter task title",
+                "placeholder": _("Enter task title"),
             }),
             "description": forms.Textarea(attrs={
                 "class": "w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-neutral outline-none focus:border-primary focus:ring-2 focus:ring-primary/10",
                 "rows": 4,
-                "placeholder": "Describe the task",
+                "placeholder": _("Describe the task"),
             }),
             "due_date": forms.DateInput(attrs={
                 "class": "w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-neutral outline-none focus:border-primary focus:ring-2 focus:ring-primary/10",

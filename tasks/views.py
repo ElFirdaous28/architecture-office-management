@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db import models
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext as _
 
 from accounts.decorators import role_required
 from projects.models import Project
@@ -58,7 +59,7 @@ def task_create(request, project_pk):
         task = form.save(commit=False)
         task.project = project
         task.save()
-        messages.success(request, "Task created successfully.")
+        messages.success(request, _("Task created successfully."))
         return redirect("project_task_list", project_pk=project.pk)
 
     return render(request, "tasks/form.html", {
@@ -76,7 +77,7 @@ def task_update(request, project_pk, pk):
 
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "Task updated successfully.")
+        messages.success(request, _("Task updated successfully."))
         return redirect("project_task_list", project_pk=project.pk)
 
     return render(request, "tasks/form.html", {
@@ -109,9 +110,9 @@ def task_status_update(request, project_pk, pk):
     form = TaskStatusForm(request.POST, instance=task)
     if form.is_valid():
         form.save()
-        messages.success(request, "Task status updated successfully.")
+        messages.success(request, _("Task status updated successfully."))
     else:
-        messages.error(request, "The task status could not be updated.")
+        messages.error(request, _("The task status could not be updated."))
 
     return redirect("project_task_list", project_pk=project_pk)
 
@@ -122,7 +123,7 @@ def task_delete(request, project_pk, pk):
 
     if request.method == "POST":
         task.delete()
-        messages.success(request, "Task deleted successfully.")
+        messages.success(request, _("Task deleted successfully."))
 
     return redirect("project_task_list", project_pk=project_pk)
 

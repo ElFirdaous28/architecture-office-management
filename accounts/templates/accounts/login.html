@@ -1,57 +1,43 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% load i18n %}
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign in | Architecture Office</title>
+    <title>{% translate "Sign in" %} | {% translate "Architecture Office" %}</title>
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
 
 <body class="min-h-screen bg-background text-text-main antialiased">
+    <div class="fixed right-4 top-4 z-10 sm:right-8 sm:top-8">
+        {% include "components/_language_switcher.html" %}
+    </div>
+
     <main class="flex min-h-screen items-center justify-center p-4 sm:p-8">
-        <div class="grid w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-surface shadow-xl lg:grid-cols-[1.05fr_0.95fr]">
-            <section class="relative hidden overflow-hidden bg-primary p-10 text-white lg:flex lg:flex-col lg:justify-between">
-                <div class="absolute -right-24 -top-24 h-72 w-72 rounded-full border-[28px] border-white/10"></div>
-                <div class="absolute -bottom-32 -left-20 h-80 w-80 rounded-full border-[36px] border-secondary/30"></div>
-
-                <div class="relative">
-                    <div class="mb-10 flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
-                        <i data-lucide="building-2" class="h-7 w-7" aria-hidden="true"></i>
-                    </div>
-                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-white/60">
-                        Architecture Office
-                    </p>
-                    <h1 class="mt-5 max-w-md text-4xl font-bold leading-tight">
-                        Bring every project into focus.
-                    </h1>
-                    <p class="mt-5 max-w-md text-base leading-7 text-white/70">
-                        Manage clients, projects, architects, and tasks from one focused workspace.
-                    </p>
-                </div>
-
-                <p class="relative text-sm text-white/50">A clearer way to manage your practice.</p>
+        <div class="grid w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-surface shadow-xl lg:min-h-[70vh] lg:grid-cols-2">
+            <section class="relative hidden min-h-full overflow-hidden bg-primary lg:block">
+                <img src="{% static 'images/login.jpg' %}"
+                     alt="{% translate 'Architecture office' %}"
+                     class="absolute inset-0 h-full w-full object-cover object-center">
             </section>
 
-            <section class="p-6 sm:p-10 lg:p-14">
+            <section class="flex flex-col justify-center p-6 sm:p-10 lg:p-14">
                 <div class="mb-8 lg:hidden">
                     <div class="flex items-center gap-3">
                         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                             <i data-lucide="building-2" class="h-5 w-5" aria-hidden="true"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-bold tracking-wide text-primary">Architecture</p>
-                            <p class="text-xs text-text-muted">Office Management</p>
+                            <p class="text-sm font-bold tracking-wide text-primary">{% translate "Architecture" %}</p>
+                            <p class="text-xs text-text-muted">{% translate "Office Management" %}</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="mb-8">
-                    <p class="text-sm font-medium text-secondary">Welcome back</p>
-                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-primary">Sign in to your workspace</h2>
-                    <p class="mt-3 text-sm leading-6 text-text-muted">
-                        Use your office account to continue.
-                    </p>
+                    <p class="text-sm font-medium text-secondary">{% translate "Welcome back" %}</p>
+                        <h2 class="mt-2 text-3xl font-bold tracking-tight text-primary">{% translate "Sign in to your workspace" %}</h2>
                 </div>
 
                 {% if error %}
@@ -64,25 +50,25 @@
                 <form method="post" class="space-y-5">
                     {% csrf_token %}
                     <div>
-                        <label for="email" class="mb-2 block text-sm font-semibold text-neutral">Email address</label>
+                        <label for="email" class="mb-2 block text-sm font-semibold text-neutral">{% translate "Email address" %}</label>
                         <div class="relative">
                             <i data-lucide="mail" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" aria-hidden="true"></i>
                             <input type="email" id="email" name="email" required autofocus autocomplete="email"
                                    class="w-full rounded-lg border border-border bg-surface py-3 pl-10 pr-3 text-sm text-neutral outline-none transition placeholder:text-text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10"
-                                   placeholder="you@example.com">
+                                   placeholder="{% translate 'you@example.com' %}">
                         </div>
                     </div>
 
                     <div>
-                        <label for="password" class="mb-2 block text-sm font-semibold text-neutral">Password</label>
+                        <label for="password" class="mb-2 block text-sm font-semibold text-neutral">{% translate "Password" %}</label>
                         <div class="relative">
                             <i data-lucide="lock-keyhole" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" aria-hidden="true"></i>
                             <input type="password" id="password" name="password" required autocomplete="current-password"
                                    class="w-full rounded-lg border border-border bg-surface py-3 pl-10 pr-11 text-sm text-neutral outline-none transition placeholder:text-text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/10"
-                                   placeholder="Enter your password">
+                                   placeholder="{% translate 'Enter your password' %}">
                             <button type="button" data-toggle-password="password"
-                                    class="absolute right-2 top-1/2 rounded-md p-1.5 text-text-muted hover:bg-background hover:text-primary"
-                                    aria-label="Show password">
+                                    class="absolute right-3 top-1/4 rounded-md p-1.5 text-text-muted hover:text-primary"
+                                    aria-label="{% translate 'Show password' %}">
                                 <i data-lucide="eye" class="h-4 w-4" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -90,7 +76,7 @@
 
                     <button type="submit"
                             class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-tertiary focus:outline-none focus:ring-4 focus:ring-primary/20">
-                        Sign in
+                        {% translate "Sign in" %}
                         <i data-lucide="arrow-right" class="h-4 w-4" aria-hidden="true"></i>
                     </button>
                 </form>

@@ -1,4 +1,5 @@
 
+{% load i18n %}
 <header class="flex min-h-20 items-center justify-end border-b border-border bg-surface px-6 lg:px-8">
     <div class="flex items-center gap-4">
         <div class="text-right">
@@ -8,15 +9,13 @@
             <p class="text-xs text-text-muted">{{ user_role }}</p>
         </div>
 
-        <!-- <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-            {{ request.user.first_name|first|upper }}
-        </div> -->
+        {% include "components/_language_switcher.html" %}
 
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
             <button type="submit"
                 class="rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-white transition hover:opacity-90">
-                Logout
+                {% translate "Logout" %}
             </button>
         </form>
     </div>

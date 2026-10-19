@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import models
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext as _
 
 from accounts.decorators import role_required
 
@@ -44,7 +45,7 @@ def project_create(request):
 
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "Project created successfully.")
+        messages.success(request, _("Project created successfully."))
         return redirect("project_list")
 
     return render(request, "projects/form.html", {
@@ -60,7 +61,7 @@ def project_update(request, pk):
 
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "Project updated successfully.")
+        messages.success(request, _("Project updated successfully."))
         return redirect("project_list")
 
     return render(request, "projects/form.html", {
@@ -76,7 +77,7 @@ def project_delete(request, pk):
 
     if request.method == "POST":
         project.delete()
-        messages.success(request, "Project deleted successfully.")
+        messages.success(request, _("Project deleted successfully."))
         return redirect("project_list")
 
     return redirect("project_list")
@@ -92,8 +93,8 @@ def project_status_update(request, pk):
     form = ProjectStatusForm(request.POST, instance=project)
     if form.is_valid():
         form.save()
-        messages.success(request, "Project status updated successfully.")
+        messages.success(request, _("Project status updated successfully."))
     else:
-        messages.error(request, "The project status could not be updated.")
+        messages.error(request, _("The project status could not be updated."))
 
     return redirect("project_list")

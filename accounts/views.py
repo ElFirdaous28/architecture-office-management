@@ -20,6 +20,7 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.utils.translation import gettext as _
 
 
 class RequiredPasswordChangeView(LoginRequiredMixin, FormView):
@@ -60,7 +61,7 @@ def login_view(request):
         return render(
             request,
             'accounts/login.html',
-            {'error': 'Invalid email or password.'}
+            {'error': _('Invalid email or password.')}
         )
 
     return render(request, 'accounts/login.html')

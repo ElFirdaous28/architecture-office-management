@@ -1,12 +1,13 @@
 
 {% extends "accounts/base_dashboard.html" %}
+{% load i18n %}
 
-{% block title %}User Management{% endblock %}
+{% block title %}{% translate "User Management" %}{% endblock %}
 
-{% block dashboard_title %}User Management{% endblock %}
+{% block dashboard_title %}{% translate "User Management" %}{% endblock %}
 
 {% block welcome_message %}
-    Manage accounts and application roles.
+    {% translate "Manage accounts and application roles." %}
 {% endblock %}
 
 {% block dashboard_content %}
@@ -17,9 +18,9 @@
     <!-- Page actions -->
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h2 class="text-lg font-semibold text-primary">All users</h2>
+            <h2 class="text-lg font-semibold text-primary">{% translate "All users" %}</h2>
             <p class="mt-1 text-sm text-text-muted">
-                View account details, roles, and status.
+                {% translate "View account details, roles, and status." %}
             </p>
         </div>
 
@@ -27,29 +28,29 @@
             <a href="{% url 'user_create' %}"
                class="inline-flex items-center justify-center gap-2 self-start rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-tertiary sm:self-auto">
                 <i data-lucide="user-plus" class="h-4 w-4" aria-hidden="true"></i>
-                Create account
+                {% translate "Create account" %}
             </a>
         {% endif %}
     </div>
 
     <form method="get" class="flex flex-col gap-3 sm:flex-row">
         <label class="relative flex-1">
-            <span class="sr-only">Search users</span>
-            <input type="search" name="q" value="{{ search }}" placeholder="Search users..."
+            <span class="sr-only">{% translate "Search users" %}</span>
+            <input type="search" name="q" value="{{ search }}" placeholder="{% translate 'Search users...' %}"
                    class="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
         </label>
         <select name="role" class="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
-            <option value="">All roles</option>
+            <option value="">{% translate "All roles" %}</option>
             {% for value, label in role_choices %}
                 <option value="{{ value }}" {% if role == value %}selected{% endif %}>{{ label }}</option>
             {% endfor %}
         </select>
         <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">
-            Filter
+            {% translate "Filter" %}
         </button>
         {% if search or role %}
             <a href="{% url 'user_list' %}" class="rounded-lg border border-border px-4 py-2.5 text-center text-sm hover:bg-background">
-                Clear
+                {% translate "Clear" %}
             </a>
         {% endif %}
     </form>
@@ -61,16 +62,16 @@
                 <thead class="bg-background">
                     <tr>
                         <th scope="col" class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-text-muted">
-                            Name
+                            {% translate "Name" %}
                         </th>
                         <th scope="col" class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-text-muted">
-                            Email
+                            {% translate "Email" %}
                         </th>
                         <th scope="col" class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-text-muted">
-                            Role
+                            {% translate "Role" %}
                         </th>
                         <th scope="col" class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-text-muted">
-                            Status
+                            {% translate "Status" %}
                         </th>
                     </tr>
                 </thead>
@@ -99,7 +100,7 @@
                                         {{ group.name }}
                                     </span>
                                 {% empty %}
-                                    <span class="text-text-muted">No role assigned</span>
+                                    <span class="text-text-muted">{% translate "No role assigned" %}</span>
                                 {% endfor %}
                             </td>
 
@@ -107,12 +108,12 @@
                                 {% if user.is_active %}
                                     <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">
                                         <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
-                                        Active
+                                        {% translate "Active" %}
                                     </span>
                                 {% else %}
                                     <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
                                         <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                                        Inactive
+                                        {% translate "Inactive" %}
                                     </span>
                                 {% endif %}
                             </td>
@@ -123,9 +124,9 @@
                                 <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-background text-text-muted">
                                     <i data-lucide="users" class="h-6 w-6" aria-hidden="true"></i>
                                 </div>
-                                <p class="mt-4 text-sm font-semibold text-neutral">No users found</p>
+                                <p class="mt-4 text-sm font-semibold text-neutral">{% translate "No users found" %}</p>
                                 <p class="mt-1 text-sm text-text-muted">
-                                    Create an account to get started.
+                                    {% translate "Create an account to get started." %}
                                 </p>
                             </td>
                         </tr>

@@ -1,4 +1,5 @@
 
+{% load i18n %}
 <aside class="flex w-full shrink-0 flex-col bg-primary text-white md:sticky md:top-0 md:h-screen md:w-64">
 
     <!-- Brand -->
@@ -8,8 +9,8 @@
                 <i data-lucide="building-2" class="h-6 w-6" aria-hidden="true"></i>
             </div>
             <div>
-                <p class="text-sm font-bold tracking-wide">Architecture</p>
-                <p class="mt-0.5 text-xs text-white/60">Office Management</p>
+                <p class="text-sm font-bold tracking-wide">{% translate "Architecture" %}</p>
+                <p class="mt-0.5 text-xs text-white/60">{% translate "Office Management" %}</p>
             </div>
         </a>
     </div>
@@ -17,7 +18,7 @@
     <!-- Navigation -->
     <nav class="flex-1 space-y-2 px-3 py-5 md:px-4 md:py-6">
         <p class="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-white/50">
-            Menu
+            {% translate "Menu" %}
         </p>
 
         {% with current_nav=request.resolver_match.url_name %}
@@ -31,7 +32,7 @@
                    text-white/75 hover:bg-white/10 hover:text-white
                {% endif %}">
                 <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0" aria-hidden="true"></i>
-                <span>Dashboard</span>
+                <span>{% translate "Dashboard" %}</span>
             </a>
 
             <a href="{% url 'client_list' %}"
@@ -43,7 +44,7 @@
                    text-white/75 hover:bg-white/10 hover:text-white
                {% endif %}">
                 <i data-lucide="contact" class="h-5 w-5 shrink-0" aria-hidden="true"></i>
-                <span>Clients</span>
+                <span>{% translate "Clients" %}</span>
             </a>
 
             <a href="{% url 'project_list' %}"
@@ -55,7 +56,7 @@
                    text-white/75 hover:bg-white/10 hover:text-white
                {% endif %}">
                 <i data-lucide="building-2" class="h-5 w-5 shrink-0" aria-hidden="true"></i>
-                <span>Projects</span>
+                <span>{% translate "Projects" %}</span>
             </a>
 
             {% if request.user.role == "ADMIN" %}
@@ -68,7 +69,7 @@
                        text-white/75 hover:bg-white/10 hover:text-white
                    {% endif %}">
                     <i data-lucide="users" class="h-5 w-5 shrink-0" aria-hidden="true"></i>
-                    <span>Users</span>
+                    <span>{% translate "Users" %}</span>
                 </a>
             {% endif %}
 
@@ -82,7 +83,7 @@
                 <i data-lucide="shield-check" class="h-5 w-5" aria-hidden="true"></i>
             </div>
             <div class="min-w-0">
-                <p class="text-xs text-white/50">Signed in as</p>
+                <p class="text-xs text-white/50">{% translate "Signed in as" %}</p>
                 <p class="truncate text-sm font-medium">{{ request.user.get_role_display }}</p>
             </div>
         </div>

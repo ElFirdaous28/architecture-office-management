@@ -1,14 +1,15 @@
 {% extends "accounts/base_dashboard.html" %}
+{% load i18n %}
 
-{% block title %}Projects{% endblock %}
-{% block dashboard_title %}Projects{% endblock %}
-{% block welcome_message %}Plan and manage architecture projects.{% endblock %}
+{% block title %}{% translate "Projects" %}{% endblock %}
+{% block dashboard_title %}{% translate "Projects" %}{% endblock %}
+{% block welcome_message %}{% translate "Plan and manage architecture projects." %}{% endblock %}
 
 {% block dashboard_content %}
 <div class="space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h2 class="text-lg font-semibold text-primary">All Projects</h2>
+            <h2 class="text-lg font-semibold text-primary">{% translate "All Projects" %}</h2>
             <p class="mt-1 text-sm text-text-muted">
                 {{ page_obj.paginator.count }} project{{ page_obj.paginator.count|pluralize }}
             </p>
@@ -18,7 +19,7 @@
             <a href="{% url 'project_create' %}"
                class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-tertiary">
                 <i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i>
-                Add Project
+                {% translate "Add Project" %}
             </a>
         {% endif %}
     </div>
@@ -27,17 +28,17 @@
 
     <form method="get" class="flex flex-col gap-3 sm:flex-row">
         <label class="relative flex-1">
-            <span class="sr-only">Search projects</span>
-            <input type="search" name="q" value="{{ search }}" placeholder="Search projects..."
+            <span class="sr-only">{% translate "Search projects" %}</span>
+            <input type="search" name="q" value="{{ search }}" placeholder="{% translate 'Search projects...' %}"
                    class="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
         </label>
         <select name="status" class="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
-            <option value="">All statuses</option>
+            <option value="">{% translate "All statuses" %}</option>
             {% for value, label in project_status_choices %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
         </select>
-        <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">Filter</button>
+        <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">{% translate "Filter" %}</button>
         {% if search or status %}
-            <a href="{% url 'project_list' %}" class="rounded-lg border border-border px-4 py-2.5 text-center text-sm hover:bg-background">Clear</a>
+            <a href="{% url 'project_list' %}" class="rounded-lg border border-border px-4 py-2.5 text-center text-sm hover:bg-background">{% translate "Clear" %}</a>
         {% endif %}
     </form>
 
@@ -47,11 +48,11 @@
                 <table class="w-full text-left text-sm">
                     <thead class="border-b border-border bg-background text-xs uppercase tracking-wide text-text-muted">
                         <tr>
-                            <th class="px-6 py-4 font-semibold">Project</th>
-                            <th class="px-6 py-4 font-semibold">Client</th>
-                            <th class="px-6 py-4 font-semibold">Architects</th>
-                            <th class="px-6 py-4 font-semibold">Status</th>
-                            <th class="px-6 py-4 text-right font-semibold">Actions</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Project" %}</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Client" %}</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Architects" %}</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Status" %}</th>
+                            <th class="px-6 py-4 text-right font-semibold">{% translate "Actions" %}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border">
@@ -85,14 +86,14 @@
                                     <div class="flex items-center justify-end gap-3">
                                         {% if request.user.role == "ADMIN" %}
                                             <a href="{% url 'project_task_list' project.pk %}"
-                                               title="Manage tasks"
-                                               aria-label="Manage tasks for {{ project.name }}"
+                                               title="{% translate 'Manage tasks' %}"
+                                               aria-label="{% blocktranslate with name=project.name %}Manage tasks for {{ name }}{% endblocktranslate %}"
                                                class="rounded-lg p-2 text-primary transition hover:bg-primary/10">
                                                 <i data-lucide="clipboard-list" class="h-4 w-4" aria-hidden="true"></i>
                                             </a>
                                             <a href="{% url 'project_update' project.pk %}"
-                                               title="Edit project"
-                                               aria-label="Edit {{ project.name }}"
+                                               title="{% translate 'Edit project' %}"
+                                               aria-label="{% blocktranslate with name=project.name %}Edit {{ name }}{% endblocktranslate %}"
                                                class="rounded-lg p-2 text-text-muted transition hover:bg-background hover:text-primary">
                                                 <i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i>
                                             </a>
@@ -100,15 +101,15 @@
                                                     data-delete-url="{% url 'project_delete' project.pk %}"
                                                     data-client-name="{{ project.name }}"
                                                     onclick="openDeleteModal(this.dataset.deleteUrl, this.dataset.clientName)"
-                                                    title="Delete project"
-                                                    aria-label="Delete {{ project.name }}"
+                                                    title="{% translate 'Delete project' %}"
+                                                    aria-label="{% blocktranslate with name=project.name %}Delete {{ name }}{% endblocktranslate %}"
                                                     class="rounded-lg p-2 text-red-600 transition hover:bg-red-50">
                                                 <i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i>
                                             </button>
                                         {% else %}
                                             <a href="{% url 'project_task_list' project.pk %}"
-                                               title="View tasks"
-                                               aria-label="View tasks for {{ project.name }}"
+                                               title="{% translate 'View tasks' %}"
+                                               aria-label="{% blocktranslate with name=project.name %}View tasks for {{ name }}{% endblocktranslate %}"
                                                class="rounded-lg p-2 text-primary transition hover:bg-primary/10">
                                                 <i data-lucide="clipboard-list" class="h-4 w-4" aria-hidden="true"></i>
                                             </a>
@@ -125,8 +126,8 @@
                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <i data-lucide="building-2" class="h-7 w-7" aria-hidden="true"></i>
                 </div>
-                <h3 class="mt-4 text-base font-semibold text-neutral">No projects yet</h3>
-                <p class="mt-2 text-sm text-text-muted">Projects will appear here once they are added.</p>
+                <h3 class="mt-4 text-base font-semibold text-neutral">{% translate "No projects yet" %}</h3>
+                <p class="mt-2 text-sm text-text-muted">{% translate "Projects will appear here once they are added." %}</p>
             </div>
         {% endif %}
     </div>

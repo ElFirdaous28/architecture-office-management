@@ -1,8 +1,9 @@
 {% extends "accounts/base_dashboard.html" %}
+{% load i18n %}
 
 {% block title %}{{ project.name }} Tasks{% endblock %}
-{% block dashboard_title %}{{ project.name }} Tasks{% endblock %}
-{% block welcome_message %}View and manage tasks for this project.{% endblock %}
+{% block dashboard_title %}{{ project.name }} {% translate "Tasks" %}{% endblock %}
+{% block welcome_message %}{% translate "View and manage tasks for this project." %}{% endblock %}
 
 {% block dashboard_content %}
 <div class="space-y-6">
@@ -10,9 +11,9 @@
         <div>
             <a href="{% url 'project_list' %}" class="mb-3 inline-flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary">
                 <i data-lucide="arrow-left" class="h-4 w-4" aria-hidden="true"></i>
-                Back to Projects
+                {% translate "Back to Projects" %}
             </a>
-            <h2 class="text-lg font-semibold text-primary">Tasks</h2>
+            <h2 class="text-lg font-semibold text-primary">{% translate "Tasks" %}</h2>
             <p class="mt-1 text-sm text-text-muted">
                 {{ page_obj.paginator.count }} task{{ page_obj.paginator.count|pluralize }}
             </p>
@@ -22,7 +23,7 @@
             <a href="{% url 'task_create' project.pk %}"
                class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-tertiary">
                 <i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i>
-                Add Task
+                {% translate "Add Task" %}
             </a>
         {% endif %}
     </div>
@@ -31,17 +32,17 @@
 
     <form method="get" class="flex flex-col gap-3 sm:flex-row">
         <label class="relative flex-1">
-            <span class="sr-only">Search tasks</span>
-            <input type="search" name="q" value="{{ search }}" placeholder="Search tasks or architects..."
+            <span class="sr-only">{% translate "Search tasks" %}</span>
+            <input type="search" name="q" value="{{ search }}" placeholder="{% translate 'Search tasks or architects...' %}"
                    class="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
         </label>
         <select name="status" class="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
-            <option value="">All statuses</option>
+            <option value="">{% translate "All statuses" %}</option>
             {% for value, label in status_choices %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
         </select>
-        <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">Filter</button>
+        <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">{% translate "Filter" %}</button>
         {% if search or status %}
-            <a href="{% url 'project_task_list' project.pk %}" class="rounded-lg border border-border px-4 py-2.5 text-center text-sm hover:bg-background">Clear</a>
+            <a href="{% url 'project_task_list' project.pk %}" class="rounded-lg border border-border px-4 py-2.5 text-center text-sm hover:bg-background">{% translate "Clear" %}</a>
         {% endif %}
     </form>
 
@@ -51,11 +52,11 @@
                 <table class="w-full text-left text-sm">
                     <thead class="border-b border-border bg-background text-xs uppercase tracking-wide text-text-muted">
                         <tr>
-                            <th class="px-6 py-4 font-semibold">Task</th>
-                            <th class="px-6 py-4 font-semibold">Architect</th>
-                            <th class="px-6 py-4 font-semibold">Due date</th>
-                            <th class="px-6 py-4 font-semibold">Status</th>
-                            <th class="px-6 py-4 text-right font-semibold">View{% if request.user.role == "ADMIN" %} / Actions{% endif %}</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Task" %}</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Architect" %}</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Due date" %}</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Status" %}</th>
+                            <th class="px-6 py-4 text-right font-semibold">{% translate "View" %}{% if request.user.role == "ADMIN" %} / {% translate "Actions" %}{% endif %}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border">
@@ -79,16 +80,16 @@
                                     <div class="flex items-center justify-end gap-3">
                                         <button type="button"
                                                 onclick="openModal('task-{{ task.pk }}')"
-                                                title="View task"
-                                                aria-label="View {{ task.title }}"
+                                                title="{% translate 'View task' %}"
+                                                aria-label="{% blocktranslate with name=task.title %}View {{ name }}{% endblocktranslate %}"
                                                 class="rounded-lg p-2 text-primary transition hover:bg-primary/10">
                                             <i data-lucide="eye" class="h-4 w-4" aria-hidden="true"></i>
                                         </button>
 
                                         {% if request.user.role == "ADMIN" %}
                                             <a href="{% url 'task_update' project.pk task.pk %}"
-                                               title="Edit task"
-                                               aria-label="Edit {{ task.title }}"
+                                               title="{% translate 'Edit task' %}"
+                                               aria-label="{% blocktranslate with name=task.title %}Edit {{ name }}{% endblocktranslate %}"
                                                class="rounded-lg p-2 text-text-muted transition hover:bg-background hover:text-primary">
                                                 <i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i>
                                             </a>
@@ -96,8 +97,8 @@
                                                     data-delete-url="{% url 'task_delete' project.pk task.pk %}"
                                                     data-client-name="{{ task.title }}"
                                                     onclick="openDeleteModal(this.dataset.deleteUrl, this.dataset.clientName)"
-                                                    title="Delete task"
-                                                    aria-label="Delete {{ task.title }}"
+                                                    title="{% translate 'Delete task' %}"
+                                                    aria-label="{% blocktranslate with name=task.title %}Delete {{ name }}{% endblocktranslate %}"
                                                     class="rounded-lg p-2 text-red-600 transition hover:bg-red-50">
                                                 <i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i>
                                             </button>
@@ -114,8 +115,8 @@
                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <i data-lucide="clipboard-list" class="h-7 w-7" aria-hidden="true"></i>
                 </div>
-                <h3 class="mt-4 text-base font-semibold text-neutral">No tasks yet</h3>
-                <p class="mt-2 text-sm text-text-muted">Tasks will appear here once they are added.</p>
+                <h3 class="mt-4 text-base font-semibold text-neutral">{% translate "No tasks yet" %}</h3>
+                <p class="mt-2 text-sm text-text-muted">{% translate "Tasks will appear here once they are added." %}</p>
             </div>
         {% endif %}
     </div>
@@ -131,15 +132,15 @@
                  onclick="event.stopPropagation()">
                 <div class="flex items-start justify-between border-b border-border p-6">
                     <div>
-                        <p class="text-sm font-medium text-text-muted">Task details</p>
+                        <p class="text-sm font-medium text-text-muted">{% translate "Task details" %}</p>
                         <h2 id="task-title-{{ task.pk }}" class="mt-1 text-xl font-bold text-primary">
                             {{ task.title }}
                         </h2>
                     </div>
                     <button type="button"
                             onclick="closeModal(event, 'task-{{ task.pk }}')"
-                            title="Close"
-                            aria-label="Close task details"
+                            title="{% translate 'Close' %}"
+                            aria-label="{% translate 'Close task details' %}"
                             class="rounded-lg p-2 text-text-muted transition hover:bg-background hover:text-primary">
                         <i data-lucide="x" class="h-5 w-5" aria-hidden="true"></i>
                     </button>
@@ -147,19 +148,19 @@
 
                 <dl class="divide-y divide-border">
                     <div class="grid gap-2 px-6 py-4 sm:grid-cols-3">
-                        <dt class="text-sm font-medium text-text-muted">Description</dt>
+                        <dt class="text-sm font-medium text-text-muted">{% translate "Description" %}</dt>
                         <dd class="whitespace-pre-line break-words text-sm text-neutral sm:col-span-2">{{ task.description }}</dd>
                     </div>
                     <div class="grid gap-2 px-6 py-4 sm:grid-cols-3">
-                        <dt class="text-sm font-medium text-text-muted">Architect</dt>
+                        <dt class="text-sm font-medium text-text-muted">{% translate "Architect" %}</dt>
                         <dd class="text-sm text-neutral sm:col-span-2">{{ task.architect|default:"Unassigned" }}</dd>
                     </div>
                     <div class="grid gap-2 px-6 py-4 sm:grid-cols-3">
-                        <dt class="text-sm font-medium text-text-muted">Due date</dt>
+                        <dt class="text-sm font-medium text-text-muted">{% translate "Due date" %}</dt>
                         <dd class="text-sm text-neutral sm:col-span-2">{{ task.due_date }}</dd>
                     </div>
                     <div class="grid gap-2 px-6 py-4 sm:grid-cols-3">
-                        <dt class="text-sm font-medium text-text-muted">Status</dt>
+                        <dt class="text-sm font-medium text-text-muted">{% translate "Status" %}</dt>
                         <dd class="text-sm text-neutral sm:col-span-2">{{ task.get_status_display }}</dd>
                     </div>
                 </dl>

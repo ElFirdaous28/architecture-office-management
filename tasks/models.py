@@ -1,12 +1,13 @@
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Task(models.Model):
     class Status(models.TextChoices):
-        TODO = 'TODO', 'To Do'
-        IN_PROGRESS = 'IN_PROGRESS', 'In Progress'
-        COMPLETED = 'COMPLETED', 'Completed'
+        TODO = 'TODO', _('To Do')
+        IN_PROGRESS = 'IN_PROGRESS', _('In Progress')
+        COMPLETED = 'COMPLETED', _('Completed')
 
     title = models.CharField(max_length=150)
     description = models.TextField()

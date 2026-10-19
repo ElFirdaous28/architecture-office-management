@@ -1,13 +1,14 @@
 
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Project(models.Model):
     class Status(models.TextChoices):
-        PLANNED = "PLANNED", "Planned"
-        IN_PROGRESS = "IN_PROGRESS", "In Progress"
-        COMPLETED = "COMPLETED", "Completed"
+        PLANNED = "PLANNED", _("Planned")
+        IN_PROGRESS = "IN_PROGRESS", _("In Progress")
+        COMPLETED = "COMPLETED", _("Completed")
 
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)

@@ -1,10 +1,11 @@
 
 {% extends "accounts/base_dashboard.html" %}
+{% load i18n %}
 
-{% block title %}Clients{% endblock %}
-{% block dashboard_title %}Clients{% endblock %}
+{% block title %}{% translate "Clients" %}{% endblock %}
+{% block dashboard_title %}{% translate "Clients" %}{% endblock %}
 {% block welcome_message %}
-    View and manage client information.
+    {% translate "View and manage client information." %}
 {% endblock %}
 
 {% block dashboard_content %}
@@ -12,7 +13,7 @@
 
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h2 class="text-lg font-semibold text-primary">All Clients</h2>
+            <h2 class="text-lg font-semibold text-primary">{% translate "All Clients" %}</h2>
             <p class="mt-1 text-sm text-text-muted">
                 {{ page_obj.paginator.count }} client{{ page_obj.paginator.count|pluralize }}
             </p>
@@ -22,7 +23,7 @@
             <a href="{% url 'client_create' %}"
                class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-tertiary">
                 <i data-lucide="user-plus" class="h-4 w-4" aria-hidden="true"></i>
-                Add Client
+                {% translate "Add Client" %}
             </a>
         {% endif %}
     </div>
@@ -31,13 +32,13 @@
 
     <form method="get" class="flex flex-col gap-3 sm:flex-row">
         <label class="relative flex-1">
-            <span class="sr-only">Search clients</span>
-            <input type="search" name="q" value="{{ search }}" placeholder="Search clients..."
+            <span class="sr-only">{% translate "Search clients" %}</span>
+            <input type="search" name="q" value="{{ search }}" placeholder="{% translate 'Search clients...' %}"
                    class="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
         </label>
-        <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">Search</button>
+        <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">{% translate "Search" %}</button>
         {% if search %}
-            <a href="{% url 'client_list' %}" class="rounded-lg border border-border px-4 py-2.5 text-center text-sm hover:bg-background">Clear</a>
+            <a href="{% url 'client_list' %}" class="rounded-lg border border-border px-4 py-2.5 text-center text-sm hover:bg-background">{% translate "Clear" %}</a>
         {% endif %}
     </form>
 
@@ -47,10 +48,12 @@
                 <table class="w-full text-left text-sm">
                     <thead class="border-b border-border bg-background text-xs uppercase tracking-wide text-text-muted">
                         <tr>
-                            <th class="px-6 py-4 font-semibold">Client</th>
-                            <th class="px-6 py-4 font-semibold">Email</th>
-                            <th class="px-6 py-4 font-semibold">Phone</th>
-                            <th class="px-6 py-4 text-right font-semibold">Actions</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Client" %}</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Email" %}</th>
+                            <th class="px-6 py-4 font-semibold">{% translate "Phone" %}</th>
+                            {% if request.user.role == "ADMIN" %}
+                                <th class="px-6 py-4 text-right font-semibold">{% translate "Actions" %}</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border">
@@ -66,12 +69,12 @@
                                     {{ client.phone }}
                                 </td>
                                 
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center justify-end gap-3">
-                                        {% if request.user.role == "ADMIN" %}
+                                {% if request.user.role == "ADMIN" %}
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center justify-end gap-3">
                                             <a href="{% url 'client_update' client.pk %}"
-                                               title="Edit client"
-                                               aria-label="Edit {{ client.name }}"
+                                               title="{% translate 'Edit client' %}"
+                                               aria-label="{% blocktranslate with name=client.name %}Edit {{ name }}{% endblocktranslate %}"
                                                class="rounded-lg p-2 text-text-muted transition hover:bg-background hover:text-primary">
                                                 <i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i>
                                             </a>
@@ -80,14 +83,14 @@
                                                     data-delete-url="{% url 'client_delete' client.pk %}"
                                                     data-client-name="{{ client.name }}"
                                                     onclick="openDeleteModal(this.dataset.deleteUrl, this.dataset.clientName)"
-                                                    title="Delete client"
-                                                    aria-label="Delete {{ client.name }}"
+                                                    title="{% translate 'Delete client' %}"
+                                                    aria-label="{% blocktranslate with name=client.name %}Delete {{ name }}{% endblocktranslate %}"
                                                     class="rounded-lg p-2 text-red-600 transition hover:bg-red-50">
                                                 <i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i>
                                             </button>
-                                        {% endif %}
-                                    </div>
-                                </td>
+                                        </div>
+                                    </td>
+                                {% endif %}
 
                             </tr>
                         {% endfor %}
@@ -100,16 +103,16 @@
                     <i data-lucide="users" class="h-7 w-7" aria-hidden="true"></i>
                 </div>
                 <h3 class="mt-4 text-base font-semibold text-neutral">
-                    No clients yet
+                    {% translate "No clients yet" %}
                 </h3>
                 <p class="mt-2 text-sm text-text-muted">
-                    Clients will appear here once they are added.
+                    {% translate "Clients will appear here once they are added." %}
                 </p>
                 {% if user_role == "Administrator" %}
                     <a href="{% url 'client_create' %}"
                        class="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">
                         <i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i>
-                        Add your first client
+                        {% translate "Add your first client" %}
                     </a>
                 {% endif %}
             </div>

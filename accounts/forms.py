@@ -4,15 +4,16 @@ import secrets
 from django import forms
 from django.contrib.auth.models import Group
 from django.contrib.auth.forms import PasswordChangeForm
+from django.utils.translation import gettext_lazy as _
 from .models import User
 
 
 class UserCreateForm(forms.ModelForm):
     role = forms.ChoiceField(
         choices=[
-            ("Administrator", "Administrator"),
-            ("Architect", "Architect"),
-            ("Assistant", "Assistant"),
+            ("Administrator", _("Administrator")),
+            ("Architect", _("Architect")),
+            ("Assistant", _("Assistant")),
         ]
     )
 
@@ -57,7 +58,7 @@ class RequiredPasswordChangeForm(PasswordChangeForm):
 
         if new_password and self.user.check_password(new_password):
             raise forms.ValidationError(
-                "Your new password must be different from your current password."
+                _("Your new password must be different from your current password.")
             )
 
         return new_password

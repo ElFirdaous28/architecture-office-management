@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class UserManager(BaseUserManager):
@@ -51,9 +52,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     class Role(models.TextChoices):
-        ADMIN = 'ADMIN', 'Administrator'
-        ARCHITECT = 'ARCHITECT', 'Architect'
-        ASSISTANT = 'ASSISTANT', 'Assistant'
+        ADMIN = 'ADMIN', _('Administrator')
+        ARCHITECT = 'ARCHITECT', _('Architect')
+        ASSISTANT = 'ASSISTANT', _('Assistant')
 
     username = None
 

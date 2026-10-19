@@ -1,7 +1,8 @@
 
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+{% load i18n %}
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +21,6 @@
             {% include "accounts/partials/_header.html" %}
 
             <main class="flex-1 px-6 py-8 lg:px-10">
-
                 <div class="mb-8">
                     <h1 class="text-2xl font-bold tracking-tight text-primary sm:text-3xl">
                         {% block dashboard_title %}Dashboard{% endblock %}

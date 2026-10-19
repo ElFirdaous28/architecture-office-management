@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import models
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext as _
 
 from accounts.decorators import role_required
 from .forms import ClientForm
@@ -41,7 +42,7 @@ def client_create(request):
 
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "Client created successfully.")
+        messages.success(request, _("Client created successfully."))
         return redirect("client_list")
 
     return render(request, "clients/form.html", {
@@ -57,7 +58,7 @@ def client_update(request, pk):
 
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "Client updated successfully.")
+        messages.success(request, _("Client updated successfully."))
         return redirect("client_list")
 
     return render(request, "clients/form.html", {
@@ -75,11 +76,11 @@ def client_delete(request, pk):
         if client.projects.exists():
             messages.error(
                 request,
-                "This client cannot be deleted because they have associated projects.",
+                _("This client cannot be deleted because they have associated projects."),
             )
         else:
             client.delete()
-            messages.success(request, "Client deleted successfully.")
+            messages.success(request, _("Client deleted successfully."))
             return redirect("client_list")
 
     return render(request, "clients/confirm_delete.html", {

@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from accounts.models import User
 from clients.models import Client
@@ -27,12 +28,12 @@ class ProjectForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(attrs={
                 "class": "w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-neutral outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10",
-                "placeholder": "Enter project name",
+                "placeholder": _("Enter project name"),
             }),
             "description": forms.Textarea(attrs={
                 "class": "w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-neutral outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10",
                 "rows": 4,
-                "placeholder": "Describe the project",
+                "placeholder": _("Describe the project"),
             }),
             "client": forms.Select(attrs={
                 "class": "hidden",
@@ -54,12 +55,12 @@ class ProjectForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["client"].queryset = Client.objects.order_by("name")
         self.fields["client"].required = True
-        self.fields["client"].empty_label = "Select a client"
+        self.fields["client"].empty_label = _("Select a client")
         self.fields["architects"].queryset = User.objects.filter(
             role=User.Role.ARCHITECT,
             is_active=True,
         ).order_by("last_name", "first_name")
-        self.fields["architects"].label = "Assign architects"
+        self.fields["architects"].label = _("Assign architects")
 
     def clean(self):
         cleaned_data = super().clean()
@@ -67,7 +68,7 @@ class ProjectForm(forms.ModelForm):
         end_date = cleaned_data.get("end_date")
 
         if start_date and end_date and end_date < start_date:
-            self.add_error("end_date", "End date must be on or after the start date.")
+            self.add_error("end_date", _("End date must be on or after the start date."))
 
         return cleaned_data
 

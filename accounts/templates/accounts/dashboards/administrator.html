@@ -1,22 +1,26 @@
 
 {% extends "accounts/base_dashboard.html" %}
+{% load i18n %}
 
-{% block title %}Administrator Dashboard{% endblock %}
+{% block title %}{% translate "Administrator Dashboard" %}{% endblock %}
 
-{% block dashboard_title %}Administrator Dashboard{% endblock %}
+{% block dashboard_title %}{% translate "Administrator Dashboard" %}{% endblock %}
 
 {% block welcome_message %}
-    Here's an overview of your architecture office.
+    {% translate "Here's an overview of your architecture office." %}
 {% endblock %}
 
 {% block dashboard_content %}
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
-    {% include "accounts/partials/_stat_card.html" with label="Total Clients" value=total_clients icon="users" %}
+    {% translate "Total Clients" as total_clients_label %}
+    {% include "accounts/partials/_stat_card.html" with label=total_clients_label value=total_clients icon="users" %}
 
-    {% include "accounts/partials/_stat_card.html" with label="Total Projects" value=total_projects icon="building-2" %}
+    {% translate "Total Projects" as total_projects_label %}
+    {% include "accounts/partials/_stat_card.html" with label=total_projects_label value=total_projects icon="building-2" %}
 
-    {% include "accounts/partials/_stat_card.html" with label="Total Tasks" value=total_tasks icon="clipboard-list" %}
+    {% translate "Total Tasks" as total_tasks_label %}
+    {% include "accounts/partials/_stat_card.html" with label=total_tasks_label value=total_tasks icon="clipboard-list" %}
 
     {% include "accounts/partials/_stat_card.html" with label="Completed Projects" value=completed_projects icon="circle-check" %}
 

@@ -1,3 +1,4 @@
+{% load i18n %}
 <div
     id="deleteModal"
     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4"
@@ -11,14 +12,14 @@
             </div>
 
             <h2 id="deleteModalTitle" class="text-lg font-semibold">
-                Confirm deletion
+                {% translate "Confirm deletion" %}
             </h2>
         </div>
 
         <p class="mb-6 text-sm text-text-muted">
-            Are you sure you want to delete
+            {% translate "Are you sure you want to delete" %}
             <span id="deleteItemName" class="font-semibold text-neutral"></span>?
-            This action cannot be undone.
+            {% translate "This action cannot be undone." %}
         </p>
 
         <form id="deleteForm" method="post">
@@ -29,13 +30,13 @@
                     type="button"
                     id="cancelDelete"
                     class="rounded-lg border border-border px-4 py-2 text-sm hover:bg-background" >
-                    Cancel
+                    {% translate "Cancel" %}
                 </button>
 
                 <button
                     type="submit"
                     class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700" >
-                    Delete
+                    {% translate "Delete" %}
                 </button>
             </div>
         </form>

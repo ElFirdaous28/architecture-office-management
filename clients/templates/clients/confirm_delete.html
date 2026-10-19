@@ -1,8 +1,9 @@
 {% extends "accounts/base_dashboard.html" %}
+{% load i18n %}
 
-{% block title %}Cannot Delete Client{% endblock %}
-{% block dashboard_title %}Cannot Delete Client{% endblock %}
-{% block welcome_message %}This client is still connected to project data.{% endblock %}
+{% block title %}{% translate "Cannot Delete Client" %}{% endblock %}
+{% block dashboard_title %}{% translate "Cannot Delete Client" %}{% endblock %}
+{% block welcome_message %}{% translate "This client is still connected to project data." %}{% endblock %}
 
 {% block dashboard_content %}
 <div class="mx-auto max-w-xl">
@@ -12,9 +13,9 @@
                 <i data-lucide="triangle-alert" class="h-5 w-5" aria-hidden="true"></i>
             </div>
             <div>
-                <h2 class="text-lg font-semibold text-red-800">Client cannot be deleted</h2>
+                <h2 class="text-lg font-semibold text-red-800">{% translate "Client cannot be deleted" %}</h2>
                 <p class="mt-1 text-sm leading-6 text-red-700">
-                    <strong>{{ client.name }}</strong> has associated projects and must remain in the system.
+                    <strong>{{ client.name }}</strong> {% translate "has associated projects and must remain in the system." %}
                 </p>
             </div>
         </div>
@@ -23,7 +24,7 @@
             <a href="{% url 'client_list' %}"
                class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-tertiary">
                 <i data-lucide="arrow-left" class="h-4 w-4" aria-hidden="true"></i>
-                Back to Clients
+                {% translate "Back to Clients" %}
             </a>
         </div>
     </div>

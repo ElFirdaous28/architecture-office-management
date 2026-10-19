@@ -17,6 +17,14 @@ env/
 db.sqlite3
 *.sqlite3
 staticfiles/
+media/
+
+# Logs and test reports
+*.log
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
 
 # IDE / editors
 .vscode/
@@ -30,5 +38,4 @@ Thumbs.db
 node_modules/
 
 # Tailwind generated output
-# Keep output.css out of Git if it is generated during development
 static/css/output.css

@@ -1,15 +1,16 @@
 {% extends "accounts/base_dashboard.html" %}
+{% load i18n %}
 
 {% block title %}{{ page_title }}{% endblock %}
 {% block dashboard_title %}{{ page_title }}{% endblock %}
-{% block welcome_message %}Enter the project details and assign its architects.{% endblock %}
+{% block welcome_message %}{% translate "Enter the project details and assign its architects." %}{% endblock %}
 
 {% block dashboard_content %}
 <div class="mx-auto max-w-4xl">
     <a href="{% url 'project_list' %}"
        class="mb-5 inline-flex items-center gap-2 text-sm font-medium text-text-muted transition-colors hover:text-primary">
         <i data-lucide="arrow-left" class="h-4 w-4" aria-hidden="true"></i>
-        Back
+        {% translate "Back" %}
     </a>
 
     <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
@@ -50,7 +51,7 @@
                             <i data-lucide="user" class="h-4 w-4"></i>
                         </span>
                         <input id="clientSearch" type="search" autocomplete="off"
-                               placeholder="Search and select a client..."
+                               placeholder="{% translate 'Search and select a client...' %}"
                                class="w-full rounded-lg border border-border bg-surface pl-9 pr-10 py-2.5 text-sm text-neutral outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10">
                         <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-text-muted">
                             <i data-lucide="chevron-down" class="h-4 w-4 transition-transform duration-200" id="clientChevron"></i>
@@ -82,7 +83,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-semibold text-primary">{{ form.architects.label }}</h2>
-                        <p class="mt-1 text-sm text-text-muted">Select one or more architects for this project.</p>
+                        <p class="mt-1 text-sm text-text-muted">{% translate "Select one or more architects for this project." %}</p>
                     </div>
                     <span id="architectBadge" class="hidden items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
                         0 selected
@@ -92,7 +93,7 @@
                 <div class="relative mt-4">
                     <button type="button" id="architectSelectButton"
                             class="flex w-full items-center justify-between rounded-lg border border-border bg-surface px-3 py-2.5 text-left text-sm text-text-muted outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10">
-                        <span id="architectSelection" class="truncate">Search and select architects</span>
+                        <span id="architectSelection" class="truncate">{% translate "Search and select architects" %}</span>
                         <i data-lucide="chevron-down" class="h-4 w-4 shrink-0 transition-transform duration-200" id="architectChevron"></i>
                     </button>
                     
@@ -104,7 +105,7 @@
                                 <i data-lucide="search" class="h-4 w-4"></i>
                             </span>
                             <input id="architectSearch" type="search" autocomplete="off"
-                                   placeholder="Filter architects by name..."
+                                   placeholder="{% translate 'Filter architects by name...' %}"
                                    class="w-full rounded-lg border border-border bg-surface pl-9 pr-3 py-2 text-sm text-neutral outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10">
                         </div>
                         <div class="max-h-56 space-y-0.5 overflow-y-auto pr-1">
@@ -115,7 +116,7 @@
                                     <span class="select-none">{{ checkbox.choice_label }}</span>
                                 </label>
                             {% empty %}
-                                <p class="px-2 py-3 text-sm text-text-muted text-center">No active architects available.</p>
+                                <p class="px-2 py-3 text-sm text-text-muted text-center">{% translate "No active architects available." %}</p>
                             {% endfor %}
                         </div>
                     </div>
@@ -126,10 +127,10 @@
             </section>
 
             <div class="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
-                <a href="{% url 'project_list' %}" class="inline-flex justify-center rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-background">Cancel</a>
+                <a href="{% url 'project_list' %}" class="inline-flex justify-center rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-background">{% translate "Cancel" %}</a>
                 <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-tertiary shadow-sm">
                     <i data-lucide="save" class="h-4 w-4" aria-hidden="true"></i>
-                    Save Project
+                    {% translate "Save Project" %}
                 </button>
             </div>
         </form>
