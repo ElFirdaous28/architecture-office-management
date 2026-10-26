@@ -1,6 +1,6 @@
 
 {% extends "accounts/base_dashboard.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% translate "Administrator Dashboard" %}{% endblock %}
 
@@ -11,20 +11,238 @@
 {% endblock %}
 
 {% block dashboard_content %}
-<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <p class="text-sm text-text-muted">
+        {% translate "Keep track of your office workload and team capacity." %}
+    </p>
+    <div class="flex flex-wrap gap-2">
+        <a href="{% url 'project_create' %}"
+           class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-tertiary focus:outline-none focus:ring-2 focus:ring-primary/30">
+            <i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i>
+            {% translate "New project" %}
+        </a>
+        <a href="{% url 'client_create' %}"
+           class="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-medium text-primary shadow-sm transition hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20">
+            <i data-lucide="user-plus" class="h-4 w-4" aria-hidden="true"></i>
+            {% translate "Add client" %}
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+    
     {% translate "Total Clients" as total_clients_label %}
-    {% include "accounts/partials/_stat_card.html" with label=total_clients_label value=total_clients icon="users" %}
+    {% translate "All active client accounts" as total_clients_description %}
+    {% include "accounts/partials/_stat_card.html" with label=total_clients_label value=total_clients icon="users" description=total_clients_description %}
 
     {% translate "Total Projects" as total_projects_label %}
-    {% include "accounts/partials/_stat_card.html" with label=total_projects_label value=total_projects icon="building-2" %}
+    {% translate "Projects across every status" as total_projects_description %}
+    {% include "accounts/partials/_stat_card.html" with label=total_projects_label value=total_projects icon="building-2" description=total_projects_description %}
 
     {% translate "Total Tasks" as total_tasks_label %}
-    {% include "accounts/partials/_stat_card.html" with label=total_tasks_label value=total_tasks icon="clipboard-list" %}
+    {% translate "Tasks assigned across projects" as total_tasks_description %}
+    {% include "accounts/partials/_stat_card.html" with label=total_tasks_label value=total_tasks icon="clipboard-list" description=total_tasks_description %}
 
-    {% include "accounts/partials/_stat_card.html" with label="Completed Projects" value=completed_projects icon="circle-check" %}
+    {% translate "Active Projects" as active_projects_label %}
+    {% translate "Currently in progress" as active_projects_description %}
+    {% include "accounts/partials/_stat_card.html" with label=active_projects_label value=active_projects icon="activity" description=active_projects_description %}
 
-    {% include "accounts/partials/_stat_card.html" with label="Completed Tasks" value=completed_tasks icon="check-check" %}
+    {% translate "Completed Projects" as completed_projects_label %}
+    {% translate "Successfully delivered projects" as completed_projects_description %}
+    {% include "accounts/partials/_stat_card.html" with label=completed_projects_label value=completed_projects icon="circle-check" description=completed_projects_description %}
+
+    {% translate "Completed Tasks" as completed_tasks_label %}
+    {% translate "Tasks marked as complete" as completed_tasks_description %}
+    {% include "accounts/partials/_stat_card.html" with label=completed_tasks_label value=completed_tasks icon="check-check" description=completed_tasks_description %}
 
 </div>
+
+<!-- Charts -->
+<div class="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
+
+    <section class="rounded-2xl border border-border/80 bg-surface p-6 shadow-sm">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <h2 class="text-lg font-semibold text-primary">
+                    {% translate "Projects by Status" %}
+                </h2>
+                <p class="mt-1 text-sm text-text-muted">
+                    {% translate "Distribution of all projects by status." %}
+                </p>
+            </div>
+            <i data-lucide="pie-chart" class="mt-1 h-5 w-5 shrink-0 text-text-muted" aria-hidden="true"></i>
+        </div>
+
+        <div class="relative mt-6 h-64">
+            <canvas id="projectChart"
+                    role="img"
+                    aria-label="{% translate 'Projects by status chart' %}">
+            </canvas>
+        </div>
+    </section>
+
+    <section class="rounded-2xl border border-border/80 bg-surface p-6 shadow-sm">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <h2 class="text-lg font-semibold text-primary">
+                    {% translate "Tasks by Status" %}
+                </h2>
+                <p class="mt-1 text-sm text-text-muted">
+                    {% translate "Number of tasks in each status." %}
+                </p>
+            </div>
+            <i data-lucide="bar-chart-3" class="mt-1 h-5 w-5 shrink-0 text-text-muted" aria-hidden="true"></i>
+        </div>
+
+        <div class="relative mt-6 h-64">
+            <canvas id="taskChart"
+                    role="img"
+                    aria-label="{% translate 'Tasks by status chart' %}">
+            </canvas>
+        </div>
+    </section>
+
+</div>
+
+{{ project_chart|json_script:"project-chart-data" }}
+{{ task_chart|json_script:"task-chart-data" }}
+
+<!-- Recent Projects -->
+<section class="mt-8 rounded-xl border border-border bg-surface p-6 shadow-sm">
+
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h2 class="text-lg font-semibold text-primary">
+                {% translate "Recent Projects" %}
+            </h2>
+            <p class="mt-1 text-sm text-text-muted">
+                {% translate "The five most recently updated projects." %}
+            </p>
+        </div>
+
+        <a href="{% url 'project_list' %}"
+           class="text-sm font-medium text-primary hover:underline">
+            {% translate "View all projects" %}
+        </a>
+    </div>
+
+    <div class="mt-5 overflow-x-auto">
+        <table class="w-full min-w-[640px] text-left text-sm">
+            <thead class="border-b border-border bg-background text-text-muted">
+                <tr>
+                    <th class="px-3 py-3 font-medium">{% translate "Project" %}</th>
+                    <th class="px-3 py-3 font-medium">{% translate "Client" %}</th>
+                    <th class="px-3 py-3 font-medium">{% translate "Status" %}</th>
+                    <th class="px-3 py-3 font-medium">{% translate "Architects" %}</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-border">
+                {% for project in recent_projects %}
+                    <tr class="transition-colors hover:bg-background">
+                        <td class="px-3 py-4 font-medium text-primary">
+                            {{ project.name }}
+                        </td>
+
+                        <td class="px-3 py-4 text-text-muted">
+                            {{ project.client|default:"—" }}
+                        </td>
+
+                        <td class="px-3 py-4">
+                            {% include "components/_status_badge.html" with status=project.status %}
+                        </td>
+
+                        <td class="px-3 py-4 text-text-muted">
+                            {% for architect in project.architects.all %}
+                                {{ architect.first_name }} {{ architect.last_name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                —
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-3 py-8 text-center text-text-muted">
+                            {% translate "No projects available yet." %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+<!-- Architect Availability -->
+<section class="mt-8 rounded-2xl border border-border bg-surface p-6 shadow-sm">
+    <div class="mb-5">
+        <h2 class="font-semibold text-primary">
+            {% translate "Architect Workload" %}
+        </h2>
+        <p class="mt-1 text-sm text-text-muted">
+            {% translate "Available architects and those with the most active projects." %}
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+
+        <!-- Available Architects -->
+        <div>
+            <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-green-700">
+                <i data-lucide="user-check" class="h-4 w-4" aria-hidden="true"></i>
+                {% translate "Available Architects" %}
+            </h3>
+
+            <div class="divide-y divide-border rounded-xl border border-border px-3">
+                {% for architect in available_architects_list %}
+                    <div class="flex items-center justify-between gap-3 py-3">
+                        <span class="truncate text-sm font-medium text-primary">
+                            {{ architect.first_name }} {{ architect.last_name }}
+                        </span>
+                        <span class="shrink-0 text-xs text-text-muted">
+                            0 {% translate "projects" %}
+                        </span>
+                    </div>
+                {% empty %}
+                    <p class="py-4 text-sm text-text-muted">
+                        {% translate "No available architects." %}
+                    </p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Most Assigned Architects -->
+        <div>
+            <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-secondary">
+                <i data-lucide="briefcase-business" class="h-4 w-4" aria-hidden="true"></i>
+                {% translate "Most Assigned" %}
+            </h3>
+
+            <div class="divide-y divide-border rounded-xl border border-border px-3">
+                {% for architect in busiest_architects %}
+                    <div class="flex items-center justify-between gap-3 py-3">
+                        <span class="truncate text-sm font-medium text-primary">
+                            {{ architect.first_name }} {{ architect.last_name }}
+                        </span>
+                        <span class="shrink-0 rounded-full bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-700">
+                            {{ architect.active_project_count }}
+                            {% translate "projects" %}
+                        </span>
+                    </div>
+                {% empty %}
+                    <p class="py-4 text-sm text-text-muted">
+                        {% translate "No assigned architects." %}
+                    </p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/dashboard.bundle.js' %}" defer></script>
 {% endblock %}

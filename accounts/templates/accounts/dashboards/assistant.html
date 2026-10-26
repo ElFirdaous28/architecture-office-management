@@ -1,20 +1,82 @@
 
 {% extends "accounts/base_dashboard.html" %}
+{% load i18n static %}
 
-{% block title %}Assistant Dashboard{% endblock %}
-
-{% block dashboard_title %}Office Overview{% endblock %}
+{% block title %}{% translate "Assistant Dashboard" %}{% endblock %}
+{% block dashboard_title %}{% translate "Office Overview" %}{% endblock %}
 
 {% block welcome_message %}
-    Here's an overview of the office's projects and tasks.
+    {% translate "A quick overview of office projects and tasks." %}
 {% endblock %}
 
 {% block dashboard_content %}
-<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
+<!-- Statistics -->
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
     {% include "accounts/partials/_stat_card.html" with label="Total Projects" value=total_projects icon="building-2" %}
-
+    {% include "accounts/partials/_stat_card.html" with label="Active Projects" value=active_projects icon="activity" %}
     {% include "accounts/partials/_stat_card.html" with label="Total Tasks" value=total_tasks icon="clipboard-list" %}
+    {% include "accounts/partials/_stat_card.html" with label="Completed Tasks" value=completed_tasks icon="circle-check" %}
+</div>
+
+<div class="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
+
+    <!-- Project Status Chart -->
+    <section class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+        <h2 class="font-semibold text-primary">
+            {% translate "Projects by Status" %}
+        </h2>
+        <p class="mt-1 text-sm text-text-muted">
+            {% translate "Current distribution of office projects." %}
+        </p>
+
+        <div class="relative mx-auto mt-5 h-64 max-w-md">
+            <canvas id="projectChart" role="img"
+                aria-label="{% translate 'Projects by status chart' %}"></canvas>
+        </div>
+    </section>
+
+    <!-- Recent Projects -->
+    <section class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+        <div class="mb-4">
+            <h2 class="font-semibold text-primary">
+                {% translate "Recent Projects" %}
+            </h2>
+            <p class="mt-1 text-sm text-text-muted">
+                {% translate "The five most recently updated projects." %}
+            </p>
+        </div>
+
+        <div class="divide-y divide-border">
+            {% for project in recent_projects %}
+                <div class="flex items-center justify-between gap-4 py-3">
+                    <div class="min-w-0">
+                        <p class="truncate text-sm font-medium text-primary">
+                            {{ project.name }}
+                        </p>
+                        <p class="mt-1 truncate text-xs text-text-muted">
+                            {{ project.client|default:"—" }}
+                        </p>
+                    </div>
+
+                    <span class="shrink-0 rounded-full bg-background px-2.5 py-1 text-xs text-text-muted">
+                        {{ project.get_status_display }}
+                    </span>
+                </div>
+            {% empty %}
+                <p class="py-6 text-sm text-text-muted">
+                    {% translate "No projects available yet." %}
+                </p>
+            {% endfor %}
+        </div>
+    </section>
 
 </div>
+
+{{ project_chart|json_script:"project-chart-data" }}
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/assistant-dashboard.bundle.js' %}" defer></script>
 {% endblock %}

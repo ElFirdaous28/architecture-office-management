@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --watch",
-    "build": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --minify"
+    "build:css": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --minify",
+    "build:js": "esbuild static/js/dashboard.js --bundle --minify --outfile=static/js/dashboard.bundle.js",
+    "build:architect-js": "esbuild static/js/architect-dashboard.js --bundle --minify --outfile=static/js/architect-dashboard.bundle.js",
+    "build:assistant-js": "esbuild static/js/assistant-dashboard.js --bundle --minify --outfile=static/js/assistant-dashboard.bundle.js",
+    "build": "npm run build:css && npm run build:js && npm run build:architect-js && npm run build:assistant-js"
   },
   "repository": {
     "type": "git",
@@ -21,9 +25,14 @@
   "homepage": "https://github.com/ElFirdaous28/architecture-office-management#readme",
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.3",
+    "esbuild": "^0.28.2",
     "tailwindcss": "^4.3.3"
   },
   "dependencies": {
+    "chart.js": "^4.6.1",
     "lucide": "^1.59.0"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.5.1": true
   }
 }

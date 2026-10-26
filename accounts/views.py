@@ -20,6 +20,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.utils.translation import gettext as _
 from django.utils import timezone
+from django.db.models import Q, Count
 
 
 @login_required
@@ -115,53 +116,168 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+
 @login_required
 def dashboard_view(request):
     user = request.user
-    groups = set(user.groups.values_list('name', flat=True))
+    groups = set(user.groups.values_list("name", flat=True))
 
     context = {
-        'total_clients': Client.objects.count(),
-        'total_projects': Project.objects.count(),
-        'total_tasks': Task.objects.count(),
-        'completed_projects': Project.objects.filter(
+        "total_clients": Client.objects.count(),
+        "total_projects": Project.objects.count(),
+        "total_tasks": Task.objects.count(),
+        "completed_projects": Project.objects.filter(
             status=Project.Status.COMPLETED
         ).count(),
-        'completed_tasks': Task.objects.filter(
+        "completed_tasks": Task.objects.filter(
             status=Task.Status.COMPLETED
         ).count(),
-        'user_role': next(
+        "user_role": next(
             (
                 name
-                for name in ('Administrator', 'Architect', 'Assistant')
+                for name in ("Administrator", "Architect", "Assistant")
                 if name in groups
             ),
-            'No role assigned',
+            "No role assigned",
         ),
-        'is_administrator': 'Administrator' in groups,
-        'is_architect': 'Architect' in groups,
-        'is_assistant': 'Assistant' in groups,
+        "is_administrator": "Administrator" in groups,
+        "is_architect": "Architect" in groups,
+        "is_assistant": "Assistant" in groups,
     }
 
-    if 'Architect' in groups:
-        context['my_projects'] = Project.objects.filter(
-            architects=user
-        )
-        context['my_tasks'] = Task.objects.filter(
-            architect=user
+    if "Administrator" in groups:
+        context["active_projects"] = Project.objects.filter(
+            status=Project.Status.IN_PROGRESS
+        ).count()
+
+        project_status_counts = dict(
+            Project.objects.values_list("status").annotate(
+                total=Count("id")
+            ).values_list("status", "total")
         )
 
-    if 'Administrator' in groups:
-        template_name = 'accounts/dashboards/administrator.html'
-    elif 'Architect' in groups:
-        template_name = 'accounts/dashboards/architect.html'
-    elif 'Assistant' in groups:
-        template_name = 'accounts/dashboards/assistant.html'
+        context["project_chart"] = {
+            "labels": [str(label) for value, label in Project.Status.choices],
+            "data": [
+                project_status_counts.get(value, 0)
+                for value, label in Project.Status.choices
+            ],
+        }
+
+        task_status_counts = dict(
+            Task.objects.values_list("status").annotate(
+                total=Count("id")
+            ).values_list("status", "total")
+        )
+
+        context["task_chart"] = {
+            "labels": [str(label) for value, label in Task.Status.choices],
+            "data": [
+                task_status_counts.get(value, 0)
+                for value, label in Task.Status.choices
+            ],
+        }
+
+        context["recent_projects"] = (
+            Project.objects.select_related("client")
+            .prefetch_related("architects")
+            .order_by("-updated_at")[:5]
+        )
+
+        architects = (
+            User.objects.filter(
+                role=User.Role.ARCHITECT,
+                is_active=True,
+                deleted_at__isnull=True,
+            )
+            .annotate(
+                active_project_count=Count(
+                    "assigned_projects",
+                    filter=Q(
+                        assigned_projects__status=Project.Status.IN_PROGRESS
+                    ),
+                    distinct=True,
+                )
+            )
+            .order_by("last_name", "first_name")
+        )
+
+        context["available_architects_list"] = architects.filter(
+            active_project_count=0
+        )[:3]
+
+        context["busiest_architects"] = architects.filter(
+            active_project_count__gt=0
+        ).order_by(
+            "-active_project_count", "last_name", "first_name"
+        )[:3]
+
+        template_name = "accounts/dashboards/administrator.html"
+
+   
+    elif "Architect" in groups:
+        my_projects = Project.objects.filter(architects=user)
+        my_tasks = Task.objects.filter(architect=user)
+
+        context["my_projects"] = my_projects
+        context["my_tasks"] = my_tasks
+        context["my_active_projects"] = my_projects.filter(
+            status=Project.Status.IN_PROGRESS
+        ).count()
+        context["my_completed_tasks"] = my_tasks.filter(
+            status=Task.Status.COMPLETED
+        ).count()
+
+        context["upcoming_tasks"] = (
+            my_tasks.exclude(status=Task.Status.COMPLETED)
+            .order_by("due_date")[:5]
+        )
+
+        task_status_counts = {
+            item["status"]: item["total"]
+            for item in my_tasks.values("status").annotate(total=Count("id"))
+        }
+
+        context["task_chart"] = {
+            "labels": [str(label) for value, label in Task.Status.choices],
+            "data": [
+                task_status_counts.get(value, 0)
+                for value, label in Task.Status.choices
+            ],
+        }
+
+        template_name = "accounts/dashboards/architect.html"
+
+
+    elif "Assistant" in groups:
+        context["recent_projects"] = (
+            Project.objects.select_related("client")
+            .order_by("-updated_at")[:5]
+        )
+
+        project_status_counts = {
+            item["status"]: item["total"]
+            for item in Project.objects.values("status").annotate(
+                total=Count("id")
+            )
+        }
+
+        context["project_chart"] = {
+            "labels": [
+                str(label) for value, label in Project.Status.choices
+            ],
+            "data": [
+                project_status_counts.get(value, 0)
+                for value, label in Project.Status.choices
+            ],
+        }
+
+        template_name = "accounts/dashboards/assistant.html"
+
     else:
         raise PermissionDenied
 
     return render(request, template_name, context)
-
 
 @role_required("Administrator")
 def user_list_view(request):

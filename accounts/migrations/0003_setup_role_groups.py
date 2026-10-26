@@ -37,14 +37,12 @@ def setup_role_groups(apps, schema_editor):
 
     groups = {}
 
-    # Create the three application roles.
     for group_name in ROLE_GROUPS.values():
         group, _ = Group.objects.using(db).get_or_create(
             name=group_name
         )
         groups[group_name] = group
 
-    # Create or retrieve the model permissions and assign them.
     for group_name, models_permissions in MODEL_PERMISSIONS.items():
         group = groups[group_name]
 
@@ -69,7 +67,6 @@ def setup_role_groups(apps, schema_editor):
 
                 group.permissions.add(permission)
 
-    # Preserve existing users and map their current roles to Groups.
     for user in User.objects.using(db).all().iterator():
         group_name = ROLE_GROUPS.get(user.role)
 

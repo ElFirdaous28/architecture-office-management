@@ -1,20 +1,75 @@
 
 {% extends "accounts/base_dashboard.html" %}
+{% load i18n static %}
 
-{% block title %}Architect Dashboard{% endblock %}
-
-{% block dashboard_title %}My Workspace{% endblock %}
+{% block title %}{% translate "Architect Dashboard" %}{% endblock %}
+{% block dashboard_title %}{% translate "My Workspace" %}{% endblock %}
 
 {% block welcome_message %}
-    Here's an overview of your assigned projects and tasks.
+    {% translate "Track your projects and tasks in one place." %}
 {% endblock %}
 
 {% block dashboard_content %}
-<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
     {% include "accounts/partials/_stat_card.html" with label="My Projects" value=my_projects.count icon="building-2" %}
-
+    {% include "accounts/partials/_stat_card.html" with label="Active Projects" value=my_active_projects icon="activity" %}
     {% include "accounts/partials/_stat_card.html" with label="My Tasks" value=my_tasks.count icon="clipboard-list" %}
+    {% include "accounts/partials/_stat_card.html" with label="Completed Tasks" value=my_completed_tasks icon="circle-check" %}
+</div>
+
+<div class="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
+
+    <section class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+        <h2 class="font-semibold text-primary">
+            {% translate "My Tasks by Status" %}
+        </h2>
+        <p class="mt-1 text-sm text-text-muted">
+            {% translate "An overview of your task progress." %}
+        </p>
+        <div class="relative mt-5 h-64">
+            <canvas id="taskChart" role="img"
+                aria-label="{% translate 'My tasks by status chart' %}"></canvas>
+        </div>
+    </section>
+
+    <section class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+        <h2 class="font-semibold text-primary">
+            {% translate "Upcoming Tasks" %}
+        </h2>
+        <p class="mt-1 text-sm text-text-muted">
+            {% translate "Your next five unfinished tasks." %}
+        </p>
+
+        <div class="mt-4 divide-y divide-border">
+            {% for task in upcoming_tasks %}
+                <div class="flex items-center justify-between gap-4 py-3">
+                    <div class="min-w-0">
+                        <p class="truncate text-sm font-medium text-primary">
+                            {{ task.title }}
+                        </p>
+                        <p class="mt-1 text-xs text-text-muted">
+                            {{ task.project.name }} · {{ task.due_date|date:"M d, Y" }}
+                        </p>
+                    </div>
+                    <span class="shrink-0 rounded-full bg-background px-2.5 py-1 text-xs text-text-muted">
+                        {{ task.get_status_display }}
+                    </span>
+                </div>
+            {% empty %}
+                <p class="py-6 text-sm text-text-muted">
+                    {% translate "No upcoming tasks." %}
+                </p>
+            {% endfor %}
+        </div>
+    </section>
 
 </div>
+
+{{ task_chart|json_script:"task-chart-data" }}
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/architect-dashboard.bundle.js' %}" defer></script>
 {% endblock %}
