@@ -12,10 +12,14 @@
 {% block dashboard_content %}
 
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-    {% include "accounts/partials/_stat_card.html" with label="My Projects" value=my_projects.count icon="building-2" %}
-    {% include "accounts/partials/_stat_card.html" with label="Active Projects" value=my_active_projects icon="activity" %}
-    {% include "accounts/partials/_stat_card.html" with label="My Tasks" value=my_tasks.count icon="clipboard-list" %}
-    {% include "accounts/partials/_stat_card.html" with label="Completed Tasks" value=my_completed_tasks icon="circle-check" %}
+    {% translate "My Projects" as my_projects_label %}
+    {% translate "Active Projects" as active_projects_label %}
+    {% translate "My Tasks" as my_tasks_label %}
+    {% translate "Completed Tasks" as completed_tasks_label %}
+    {% include "accounts/partials/_stat_card.html" with label=my_projects_label value=my_projects.count icon="building-2" %}
+    {% include "accounts/partials/_stat_card.html" with label=active_projects_label value=my_active_projects icon="activity" %}
+    {% include "accounts/partials/_stat_card.html" with label=my_tasks_label value=my_tasks.count icon="clipboard-list" %}
+    {% include "accounts/partials/_stat_card.html" with label=completed_tasks_label value=my_completed_tasks icon="circle-check" %}
 </div>
 
 <div class="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -52,9 +56,7 @@
                             {{ task.project.name }} · {{ task.due_date|date:"M d, Y" }}
                         </p>
                     </div>
-                    <span class="shrink-0 rounded-full bg-background px-2.5 py-1 text-xs text-text-muted">
-                        {{ task.get_status_display }}
-                    </span>
+                    {% include "components/_status_badge.html" with status=task.status label=task.get_status_display %}
                 </div>
             {% empty %}
                 <p class="py-6 text-sm text-text-muted">

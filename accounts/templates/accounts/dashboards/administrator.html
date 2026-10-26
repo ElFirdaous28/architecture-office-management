@@ -33,28 +33,22 @@
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
     
     {% translate "Total Clients" as total_clients_label %}
-    {% translate "All active client accounts" as total_clients_description %}
-    {% include "accounts/partials/_stat_card.html" with label=total_clients_label value=total_clients icon="users" description=total_clients_description %}
+    {% include "accounts/partials/_stat_card.html" with label=total_clients_label value=total_clients icon="users" %}
 
     {% translate "Total Projects" as total_projects_label %}
-    {% translate "Projects across every status" as total_projects_description %}
-    {% include "accounts/partials/_stat_card.html" with label=total_projects_label value=total_projects icon="building-2" description=total_projects_description %}
+    {% include "accounts/partials/_stat_card.html" with label=total_projects_label value=total_projects icon="building-2" %}
 
     {% translate "Total Tasks" as total_tasks_label %}
-    {% translate "Tasks assigned across projects" as total_tasks_description %}
-    {% include "accounts/partials/_stat_card.html" with label=total_tasks_label value=total_tasks icon="clipboard-list" description=total_tasks_description %}
+    {% include "accounts/partials/_stat_card.html" with label=total_tasks_label value=total_tasks icon="clipboard-list" %}
 
     {% translate "Active Projects" as active_projects_label %}
-    {% translate "Currently in progress" as active_projects_description %}
-    {% include "accounts/partials/_stat_card.html" with label=active_projects_label value=active_projects icon="activity" description=active_projects_description %}
+    {% include "accounts/partials/_stat_card.html" with label=active_projects_label value=active_projects icon="activity" %}
 
     {% translate "Completed Projects" as completed_projects_label %}
-    {% translate "Successfully delivered projects" as completed_projects_description %}
-    {% include "accounts/partials/_stat_card.html" with label=completed_projects_label value=completed_projects icon="circle-check" description=completed_projects_description %}
+    {% include "accounts/partials/_stat_card.html" with label=completed_projects_label value=completed_projects icon="circle-check" %}
 
     {% translate "Completed Tasks" as completed_tasks_label %}
-    {% translate "Tasks marked as complete" as completed_tasks_description %}
-    {% include "accounts/partials/_stat_card.html" with label=completed_tasks_label value=completed_tasks icon="check-check" description=completed_tasks_description %}
+    {% include "accounts/partials/_stat_card.html" with label=completed_tasks_label value=completed_tasks icon="check-check" %}
 
 </div>
 
@@ -150,7 +144,7 @@
                         </td>
 
                         <td class="px-3 py-4">
-                            {% include "components/_status_badge.html" with status=project.status %}
+                            {% include "components/_status_badge.html" with status=project.status label=project.get_status_display %}
                         </td>
 
                         <td class="px-3 py-4 text-text-muted">
