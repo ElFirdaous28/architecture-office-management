@@ -18,7 +18,8 @@ Elle propose trois rôles :
 
 - **Backend :** Python, Django
 - **Frontend :** HTML, JavaScript, Tailwind CSS
-- **Base de données :** SQLite ou MySQL selon la configuration
+- **Base de données :** MySQL
+- **Bibliothèques JavaScript :** Chart.js, Lucide
 - **Outils :** Git, GitHub, VS Code
 
 ## 3. Fonctionnalités principales
@@ -37,18 +38,19 @@ Elle propose trois rôles :
 
 Avant d'installer le projet, assurez-vous de disposer des éléments suivants :
 
-- Python compatible avec la version du projet.
-- pip.
-- Node.js et npm.
-- Git.
-- Une base de données configurée selon les paramètres du projet.
+- Python 3.14
+- pip
+- Node.js et npm
+- MySQL Server 8.4
+- Git
 
 ## 5. Installation
 
 ### 5.1 Cloner le projet
 
 ```bash
-git clone <URL_DU_DEPOT>
+git clone https://github.com/ElFirdaous28/architecture-office-management.git
+
 cd architecture-office-management
 ```
 
@@ -70,39 +72,100 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 5.4 Configurer les variables d'environnement
+### 5.4 Configurer MySQL
 
-Créer un fichier `.env` à partir du fichier `.env.example` :
+Créer une base de données MySQL :
+
+```sql
+CREATE DATABASE architecture_office
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+```
+
+Créer un utilisateur MySQL pour l'application :
+
+```sql
+CREATE USER 'architecture_user'@'localhost'
+IDENTIFIED BY 'your_password';
+```
+
+Accorder les permissions nécessaires :
+
+```sql
+GRANT ALL PRIVILEGES ON architecture_office.*
+TO 'architecture_user'@'localhost';
+
+FLUSH PRIVILEGES;
+```
+
+Remplacer `your_password` par un mot de passe sécurisé.
+
+### 5.5 Configurer les variables d'environnement
+
+Créer le fichier `.env` :
 
 ```bash
 cp .env.example .env
 ```
 
-Configurer les variables nécessaires, notamment la clé secrète Django, le mode de débogage et les paramètres de connexion à la base de données.
+Renseigner les informations de connexion MySQL dans le fichier `.env` :
 
-Ne pas partager le fichier `.env` contenant des informations sensibles.
+- Nom de la base de données : `architecture_office`
+- Utilisateur : `architecture_user`
+- Mot de passe : le mot de passe défini précédemment
+- Hôte : `localhost`
+- Port : `3306`
 
-### 5.5 Configurer la base de données
+Configurer également la clé secrète Django et le mode de débogage.
 
-Configurer la base de données utilisée par l'application dans les paramètres Django.
-
-Pour appliquer les migrations :
+### 5.6 Appliquer les migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### 5.6 Préparer les fichiers statiques
-
-Installer les dépendances frontend :
+### 5.7 Installer les dépendances frontend
 
 ```bash
 npm install
 ```
 
-Compiler les fichiers CSS avec le script de build défini dans `package.json`.
+### 5.8 Compiler les fichiers frontend
 
-### 5.7 Créer un compte administrateur
+Compiler les fichiers CSS et JavaScript :
+
+```bash
+npm run build
+```
+
+Cette commande génère :
+
+- Le CSS optimisé.
+- Le JavaScript du tableau de bord administrateur.
+- Le JavaScript du tableau de bord architecte.
+- Le JavaScript du tableau de bord assistant.
+
+Pour compiler uniquement les fichiers CSS :
+
+```bash
+npm run build:css
+```
+
+Pour compiler le JavaScript :
+
+```bash
+npm run build:js
+npm run build:architect-js
+npm run build:assistant-js
+```
+
+Pour lancer la compilation automatique du CSS pendant le développement :
+
+```bash
+npm run dev
+```
+
+### 5.9 Créer un compte administrateur
 
 ```bash
 python manage.py createsuperuser
@@ -110,13 +173,13 @@ python manage.py createsuperuser
 
 Suivre les instructions pour créer le compte.
 
-### 5.8 Lancer l'application
+### 5.10 Lancer l'application
 
 ```bash
 python manage.py runserver
 ```
 
-Ouvrir ensuite l'application dans le navigateur :
+Ouvrir l'application dans le navigateur :
 
 http://127.0.0.1:8000/
 
@@ -181,6 +244,14 @@ architecture-office-management/
 └── README.md
 ```
 
-## 9. Auteur
+## 9. Documentation
+
+Les documents du projet comprennent :
+
+- Documentation utilisateur : guide d'utilisation de l'application.
+- Rapport technique : présentation de la conception, de l'architecture, de l'implémentation et des tests.
+- Présentation finale : présentation du projet et démonstration de ses fonctionnalités.
+
+## 10. Auteur
 
 Projet réalisé dans le cadre d'un stage de développement web.
