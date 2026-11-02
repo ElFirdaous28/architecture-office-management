@@ -60,7 +60,7 @@ cd architecture-office-management
 python3 -m venv .venv
 ```
 
-Activer l'environnement virtuel sous Ubuntu :
+Activer l'environnement virtuel :
 
 ```bash
 source .venv/bin/activate
@@ -107,16 +107,6 @@ Créer le fichier `.env` :
 ```bash
 cp .env.example .env
 ```
-
-Renseigner les informations de connexion MySQL dans le fichier `.env` :
-
-- Nom de la base de données : `architecture_office`
-- Utilisateur : `architecture_user`
-- Mot de passe : le mot de passe défini précédemment
-- Hôte : `localhost`
-- Port : `3306`
-
-Configurer également la clé secrète Django et le mode de débogage.
 
 ### 5.6 Appliquer les migrations
 
@@ -244,14 +234,6 @@ architecture-office-management/
 └── README.md
 ```
 
-## 9. Documentation
-
-Les documents du projet comprennent :
-
-- Documentation utilisateur : guide d'utilisation de l'application.
-- Rapport technique : présentation de la conception, de l'architecture, de l'implémentation et des tests.
-- Présentation finale : présentation du projet et démonstration de ses fonctionnalités.
-
-## 10. Auteur
+## 9. Auteur
 
 Projet réalisé dans le cadre d'un stage de développement web.
