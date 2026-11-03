@@ -58,7 +58,7 @@
                         </span>
                     </div>
 
-                    <!-- Fixed absolute width matching parent container -->
+                    <!-- Fixed width matching the selector while staying within the viewport -->
                     <div id="clientOptions"
                          class="absolute left-0 right-0 top-full z-30 mt-1 hidden max-h-56 overflow-y-auto rounded-lg border border-border bg-surface p-1 shadow-xl">
                         {% for option in form.client %}
@@ -97,9 +97,9 @@
                         <i data-lucide="chevron-down" class="h-4 w-4 shrink-0 transition-transform duration-200" id="architectChevron"></i>
                     </button>
                     
-                    <!-- Fixed absolute width matching parent container -->
+                    <!-- Dropdown expands the form while staying below the selector -->
                     <div id="architectOptions"
-                         class="absolute left-0 right-0 top-full z-30 mt-1 hidden rounded-lg border border-border bg-surface p-3 shadow-xl">
+                         class="mt-1 hidden min-h-40 max-h-80 overflow-hidden rounded-lg border border-border bg-surface p-3 shadow-xl">
                         <div class="relative mb-2">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-text-muted">
                                 <i data-lucide="search" class="h-4 w-4"></i>
@@ -108,7 +108,7 @@
                                    placeholder="{% translate 'Filter architects by name...' %}"
                                    class="w-full rounded-lg border border-border bg-surface pl-9 pr-3 py-2 text-sm text-neutral outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10">
                         </div>
-                        <div class="max-h-56 space-y-0.5 overflow-y-auto pr-1">
+                        <div class="min-h-24 max-h-56 space-y-0.5 overflow-y-auto pr-1">
                             {% for checkbox in form.architects %}
                                 <label data-architect-option
                                        class="flex cursor-pointer items-center gap-3 rounded-md px-2.5 py-2 text-sm text-neutral transition-colors hover:bg-background">

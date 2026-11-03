@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.contrib.auth.models import Group
+from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -118,6 +119,14 @@ class AuthenticationTests(AccountTestMixin, TestCase):
         self.assertEqual(created.role, User.Role.ARCHITECT)
         self.assertTrue(created.must_change_password)
         self.assertTrue(created.groups.filter(name="Architect").exists())
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ["amina@example.com"])
+        self.assertIn("Hello Amina", mail.outbox[0].body)
+        self.assertIn("Temporary password:", mail.outbox[0].body)
+        self.assertEqual(len(mail.outbox[0].alternatives), 1)
+        self.assertEqual(mail.outbox[0].alternatives[0][1], "text/html")
+        self.assertIn("Architecture Office", mail.outbox[0].alternatives[0][0])
+        self.assertIn("amina@example.com", mail.outbox[0].alternatives[0][0])
 
 
 class DashboardTests(AccountTestMixin, TestCase):

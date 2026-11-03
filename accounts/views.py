@@ -14,7 +14,8 @@ from .decorators import role_required
 from .forms import ProfileForm, RequiredPasswordChangeForm, UserCreateForm
 
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from django.db import transaction
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -338,19 +339,28 @@ def user_create_view(request):
             with transaction.atomic():
                 user = form.save()
 
-                sent = send_mail(
+                email_context = {
+                    "first_name": user.first_name,
+                    "email": user.email,
+                    "temporary_password": form.generated_password,
+                }
+                message = EmailMultiAlternatives(
                     subject="Your Architecture Office account",
-                    message=(
-                        f"Hello {user.first_name},\n\n"
-                        "Your account has been created.\n\n"
-                        f"Email: {user.email}\n"
-                        f"Temporary password: {form.generated_password}\n\n"
-                        "Please keep these credentials private.\n"
+                    body=render_to_string(
+                        "emails/account_credentials.txt",
+                        email_context,
                     ),
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=False,
+                    to=[user.email],
                 )
+                message.attach_alternative(
+                    render_to_string(
+                        "emails/account_credentials.html",
+                        email_context,
+                    ),
+                    "text/html",
+                )
+                sent = message.send(fail_silently=False)
 
                 if sent != 1:
                     raise RuntimeError("The email was not sent.")

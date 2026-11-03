@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (clientSearch && clientSelect && clientOptions) {
         const options = clientOptions.querySelectorAll('[data-client-option]');
 
-        clientSearch.value = clientSelect.options[clientSelect.selectedIndex]?.text || '';
+        const selectedClient = clientSelect.options[clientSelect.selectedIndex];
+        clientSearch.value = selectedClient?.value ? selectedClient.text : '';
         clientSearch.addEventListener('focus', function () {
             clientOptions.classList.remove('hidden');
         });
@@ -42,7 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (architectButton && architectOptions && architectSearch) {
         architectButton.addEventListener('click', function () {
             architectOptions.classList.toggle('hidden');
-            if (!architectOptions.classList.contains('hidden')) architectSearch.focus();
+            if (!architectOptions.classList.contains('hidden')) {
+                architectSearch.focus();
+            }
         });
         architectSearch.addEventListener('input', function () {
             const query = architectSearch.value.trim().toLowerCase();
